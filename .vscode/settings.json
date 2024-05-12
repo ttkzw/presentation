@@ -1,0 +1,24 @@
+{
+	"markdown.marp.themes": ["./themes/my-theme.css"],
+	"markdown.validate.enabled": true,
+	"markdownlint.config": {
+		"MD007": {
+			"indent": 4
+		},
+		"MD009": false,
+		"MD010": false,
+		"MD012": false,
+		"MD013": false,
+		"MD014": false,
+		"MD024": false,
+		"MD025": false,
+		"MD033": false,
+		"MD034": false,
+		"MD040": false
+	},
+	"[markdown]": {
+		"editor.tabSize": 4,
+		"editor.insertSpaces": true,
+		"editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+	}
+}
