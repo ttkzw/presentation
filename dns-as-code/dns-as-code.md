@@ -1,15 +1,15 @@
 ---
 marp: true
-title: DNS as Code — コードとしてのゾーン管理 —
+title: DNS as Code — CI/CDを利用したゾーン管理 —
 size: 16:9
 theme: my-theme
-headingDivider: 3
-header: "DNS as Code — コードとしてのゾーン管理 —"
+headingDivider: 4
+header: "DNS as Code — CI/CDを利用したゾーン管理 —"
 footer: "TAKIZAWA, Takashi"
 paginate: true
 ---
 
-# DNS as Code<br>— コードとしてのゾーン管理 —
+# DNS as Code<br>— CI/CDを利用したゾーン管理 —
 <!--
 class: title
 _header: ""
@@ -25,7 +25,17 @@ _paginate: false
 class: body
 -->
 
-
+- 氏名：滝澤隆史
+- 所属：さくらインターネット株式会社
+    - 2月からお世話になっている
+- DNSとの関わり
+    - お仕事としてシステム管理者としての運用
+        - BIND4、BIND8、djbdns、BIND9、Unbound
+    - お仕事としてマネージドDNSサービスの利用
+        - Amazon Route 53、Azure DNS
+    - 個人での運用
+        - NSD, Unbound
+    - 何となくDNSで遊んでいる人
 
 
 ## “DNS as Code”とは
@@ -40,20 +50,74 @@ class: body
 -->
 
 - “DNS as Code”を明確に定義したものはない
-- [OctoDNS](https://github.com/octodns/octodns/)
-    - 2017年3月公開
-    - 公開当初（v0.8.0）のREADME.mdの見出しに「DNS as code - Tools for managing DNS across multiple providers」という記述がある
-- 『[DevOps and DNS](https://www.oreilly.com/library/view/devops-and-dns/9781492049241/)』（O'Reilly Media, Inc.）
-    - 2017年7月にリリースされたレポート
-    - 著者：Andy Still (Intechnica), Phil Stanhope (Oracle Dyn)）
-    - “Chapter 4. Managing DNS in a DevOps Culture”に“DNS as Code”についての言及がある
-
-### “DNS as Code”とは
-
-- 
+- “DNS as Code”に言及されている情報を見ていく
 
 
-### CI/CD
+### octoDNS
+
+- https://github.com/octodns/octodns/
+- 2017年3月
+- octoDNSはDNS as Codeの実装の1つ
+- 公開当初（v0.8.0）のREADME.mdの見出しに「DNS as code - Tools for managing DNS across multiple providers」という記述がある
+
+### Introducing DnsControl – “DNS as Code” has Arrived
+
+- https://blog.serverfault.com/2017/04/11/introducing-dnscontrol-dns-as-code-has-arrived/
+- 2017年4月
+- DNSControlはDNS as Codeの実装の1つ
+- DNSControlの開発元のStack Exchange社のブログ記事
+- 記事のタイトルに“DNS as Code”が含まれている
+
+### DevOps and DNS
+
+- https://www.oreilly.com/library/view/devops-and-dns/9781492049241/
+- 2017年7月
+- O'Reilly Mediaのレポート
+- 著者：Andy Still (Intechnica), Phil Stanhope (Oracle Dyn)）
+- “Chapter 4. Managing DNS in a DevOps Culture”に“DNS as Code”についての言及がある
+
+### “DNS as Code”とは結局は何なの
+
+- 2017年から登場した言葉のようである
+- Infrastructure as Code (IaC)をDNSに特化したものという認識でおおむね間違いはない
+- 登場した背景としては2016年10月のマネージドDNSプロバイダーのDynへの大規模DDoSである
+
+
+## モチベーション
+
+- マネージドDNSプロバイダーで障害が生じたときにでもゾーンを運用し続けたい
+    - 障害が生じたDNSプロバイダーをゾーンの運用から外したい
+    - そのためには、複数のDNSプロバイダーを使いたい
+    - 容易にゾーンをエクスポート・インポートしたい
+
+### マネージドDNSプロバイダー利用時の課題
+
+- DNSプロバイダーによりウェブユーザーインターフェースが異なる
+- DNSプロバイダーによりIaCの記述方法が異なる（後述）
+- インポート・エクスポート機能が不足している
+- 変更履歴が残せない
+- コメントを記述できない
+
+※DNSプロバイダーにより状況は異なる
+
+### 欲しいもの
+
+- 複数のマネージドDNSプロバイダーで共通で利用できるゾーンを記述したコード
+- このコードを扱えるソフトウェア
+- → DNS as Code
+
+### コード（テキストファイル）であることの利点
+
+- コメントを記述できる
+- gitのようなバージョン管理システム（VCS）が利用できる
+    - 変更履歴が残せる
+- GitHubやGitLabのようなバージョン管理システムのプラットフォームを利用することで
+    - プルリクエストやマージリクエストによりレビューや承認のワークフローを利用できる
+    - CI/CDが利用できる
+        - 構文チェック
+        - ドライラン（DRY RUN）
+        - DNSプロバイダーへのゾーンの反映
+
 
 
 
@@ -67,16 +131,21 @@ class: heading
 class: body
 -->
 
-- マネージドDNSプロバイダー提供プロビジョニングツール
+- クラウドサービスプロバイダー提供プロビジョニングツール
 - [Terraform](https://www.terraform.io/)/[OpenTofu](https://opentofu.org/)
-- [OctoDNS](https://github.com/octodns/octodns)
-- [dnscontrol](https://github.com/StackExchange/dnscontrol)
+- [DNSControl](https://github.com/StackExchange/dnscontrol)
+- [octoDNS](https://github.com/octodns/octodns)
 
-※本資料では特定のマネージドDNSプロバイダー依存ではないツールとしてOctoDNSとdnscontrolを主に取り上げる。
+本資料では特定のマネージドDNSプロバイダー依存ではないツールとしてDNSControlとoctoDNSを主に取り上げる。
 
-### 【参考】マネージドDNSプロバイダー提供プロビジョニングツール
+### リソースレコードの記述例
 
-Amazon Route 53をAWS CloudFormationでプロビジョニングする例を[公式ドキュメント](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html)からその設定例を紹介する。
+- リソースレコードの記述しやすさ
+    - リソースレコードの数が少なけば、それほど問題にならない
+    - リソースレコードの数が多いと、記述しやすさは重要である
+- リソースレコードの記述例をそれぞれの公式ドキュメントから見てみる
+
+#### AWS CloudFormation (Amazon Route 53)
 
 ```json
 "myDNSRecord" : {
@@ -92,13 +161,52 @@ Amazon Route 53をAWS CloudFormationでプロビジョニングする例を[公�
 }
 ```
 
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-route53.html
 
+#### Azure Resource Manager template (Azure DNS)
 
-### 【参考】Terraform/OpenTofu
+```json
+    {
+      "type": "Microsoft.Network/dnsZones/A",
+      "apiVersion": "2018-05-01",
+      "name": "[format('{0}/{1}', parameters('zoneName'), parameters('recordName'))]",
+      "properties": {
+        "TTL": 3600,
+        "ARecords": [
+          {
+            "ipv4Address": "1.2.3.4"
+          },
+          {
+            "ipv4Address": "1.2.3.5"
+          }
+        ]
+      },
+略
+    }
+```
 
-[Resource: aws_route53_record](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record)
+https://learn.microsoft.com/en-us/azure/dns/dns-get-started-template
 
-```hcl
+#### Google Cloud Deployment Manager (Google Cloud DNS)
+
+```yaml
+- name: {{ properties["rrsetName"] }}
+  type: gcp-types/dns-v1:resourceRecordSets
+  properties:
+    name: {{ properties["rrsetDomain"] }}
+    managedZone: $(ref.{{ properties["zoneName"] }}.name)
+    records:
+    - type: A
+      ttl: 50
+      rrdatas:
+      - 10.40.10.0
+```
+
+https://github.com/GoogleCloudPlatform/deploymentmanager-samples/blob/master/google/resource-snippets/dns-v1/one_a_record.jinja
+
+#### Terraform/OpenTofu (Amazon Route 53)
+
+```h
 resource "aws_route53_record" "www" {
   zone_id = aws_route53_zone.primary.zone_id
   name    = "www.example.com"
@@ -108,27 +216,295 @@ resource "aws_route53_record" "www" {
 }
 ```
 
-## OctoDNS
+https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record
+
+
+#### Terraform/OpenTofu (Azure DNS)
+
+```h
+resource "azurerm_dns_a_record" "example" {
+  name                = "test"
+  zone_name           = azurerm_dns_zone.example.name
+  resource_group_name = azurerm_resource_group.example.name
+  ttl                 = 300
+  records             = ["10.0.180.17"]
+}
+```
+
+https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/dns_a_record
+
+#### Terraform/OpenTofu (Google Cloud DNS)
+
+```h
+resource "google_dns_record_set" "a" {
+  name         = "backend.${google_dns_managed_zone.prod.dns_name}"
+  managed_zone = google_dns_managed_zone.prod.name
+  type         = "A"
+  ttl          = 300
+
+  rrdatas = ["8.8.8.8"]
+}
+```
+
+https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_record_set
+
+#### DNSControl
+
+```javascript
+  A("test", "5.6.7.8")
+```
+
+https://github.com/StackExchange/dnscontrol
+
+#### octoDNS
+
+```yaml
+---
+'':
+  ttl: 60
+  type: A
+  values:
+    - 1.2.3.4
+    - 1.2.3.5
+```
+
+https://github.com/octodns/octodns
+
+#### マスターファイル（ゾーンファイル）
+
+```
+test 300 IN A 192.0.2.1
+```
+
+### リソースレコードの設定例のまとめ
+
+- クラウドサービスプロバイダー提供プロビジョニングツールとTerraform/OpenTofu
+    - DNSに特化していなく、リソースレコードごとにリソースを定義するため、記述が冗長である
+- DNSControlとoctoDNSとマスターファイル
+    - DNSに特化しているため、記述が簡潔である
+
+## DNSControl
 <!--
 class: heading
 -->
 
-### OctoDNSとは
+### DNSControlとは
+<!--
+class: body
+-->
+
+- Stack Exchange社が開発しているDNSゾーンの保守ツール
+    - Stack Exchange社はStack Overflow（開発者向けのQ&Aサイト）の運営元
+- 公式サイト
+    - https://docs.dnscontrol.org/
+- 次の2つから構成される
+    - DNSゾーンを記述するDSL
+        - DSL: ドメイン固有言語、domain specific language
+    - DSLを処理し、DNSプロバイダーにゾーン情報を反映するソフトウェア
+
+
+### 背景
+
+- 2016年10月：Dynへの大規模DDoS
+- 2017年1月：[How Stack Overflow plans to survive the next DNS attack](https://blog.serverfault.com/2017/01/09/surviving-the-next-dns-attack/)
+- 2017年3月14日：v0.1.0公開
+
+
+### フォーマッターを使っているときの注意点
+
+- 複数行のカンマ区切りの構文構造では、末尾のカンマは許容しない
+
+```javascript
+D(
+  "example.com",
+  REG_MY_PROVIDER,
+  DnsProvider(DSP_MY_PROVIDER),
+  A("@", "192.0.2.1"),
+  A("foo", "192.0.2.2"),
+  END, ←このカンマは許容されない
+);
+```
+
+## octoDNS
+<!--
+class: heading
+-->
+
+### octoDNSとは
+<!--
+class: body
+-->
+
+- GitHub社が開発・保守しているオープンソースソフトウェア
+- DNS as code - Tools for managing DNS across multiple providers
+- https://github.com/github/octodns
+
+### CLIツール
+
+- octodns-sync
+    - ソースプロバイダーのゾーン情報をターゲットプロバイダーにAPIで同期する
+
+```sh
+$ octodns-sync --config-file=./config/production.yaml --doit
+...
+```
+
+### octoDNSの設定ファイル
+
+#### プロバイダー定義（認証情報含む）
+
+```yaml
+---
+providers:
+  config:
+    class: octodns.provider.yaml.YamlProvider
+    directory: ./config
+    default_ttl: 3600
+    enforce_order: True
+  ns:
+    class: octodns_ns1.Ns1Provider
+    api_key: env/NS1_API_KEY
+  route53:
+    class: octodns_route53.Route53Provider
+    access_key_id: env/AWS_ACCESS_KEY_ID
+    secret_access_key: env/AWS_SECRET_ACCESS_KEY
+```
+
+#### ゾーンごとのプロバイダーの指定
+
+```yaml
+zones:
+  # This is a dynamic zone config. The source(s), here `config`, will be
+  # queried for a list of zone names and each will dynamically be set up to
+  # match the dynamic entry.
+  '*':
+    sources:
+      - config
+    targets:
+      - ns1
+      - route53
+```
+
+#### ゾーンファイル（YamlProvider）
+
+```yaml
+---
+'':
+  ttl: 60
+  type: A
+  values:
+    - 1.2.3.4
+    - 1.2.3.5
+```
+
+#### ゾーンファイル（ZoneFileProvider）
+
+- マスターファイル形式のゾーンファイルを利用できる
+
+### octoDNSの実行例（DRY RUN）
+
+- デフォルトはDRY RUNとして動作する
+
+```sh
+$ octodns-sync --config-file=./config/production.yaml
+...
+********************************************************************************
+* example.com.
+********************************************************************************
+* route53 (Route53Provider)
+*   Create <ARecord A 60, example.com., [u'1.2.3.4', '1.2.3.5']>
+*   Summary: Creates=1, Updates=0, Deletes=0, Existing Records=0
+* dyn (DynProvider)
+*   Create <ARecord A 60, example.com., [u'1.2.3.4', '1.2.3.5']>
+*   Summary: Creates=1, Updates=0, Deletes=0, Existing Records=0
+********************************************************************************
+...
+```
+
+### octoDNSの実行例（反映）
+
+- 実際に反映するためには --doit オプションを付ける
+
+```sh
+$ octodns-sync --config-file=./config/production.yaml --doit
+...
+```
+
+### octoDNSが対応しているプロバイダー
+
+
+
+
+
+## マスターファイル（ゾーンファイル）
+<!--
+class: heading
+-->
+
+### マスターファイル（ゾーンファイル）
 <!--
 class: body
 -->
 
 
-## dnscontrol
+
+## 編集環境の注意点
 <!--
 class: heading
 -->
 
-### dnscontrolとは
+### .editorconfig
 <!--
 class: body
 -->
 
+- 複数人で編集したときに以下のことが生じないように`.editorconfig`を用意する
+    - タブとスペースが混在する
+    - インデントのスペースの桁数が統一されていない
+    - 最終行が改行で終わったり終わらなかったりする
+
+```ini
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+tab_width = 2
+end_of_line = lf
+charset = UTF-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+```
+
+### .editorconfigをサポートしていないエディター
+
+- プラグインを入れて利用できるようにすることを徹底させる
+    - Vim用プラグイン
+        - https://github.com/editorconfig/editorconfig-vim
+        - Vim 9.0.1799, Neovim 0.9以降ではバンドルされている
+    - Emacs用プラグイン
+        - https://github.com/editorconfig/editorconfig-emacs
+
+
+### JavaScriptのフォーマッターの設定
+
+Prettier (.prettier)
+
+```json
+{
+  "trailingComma": "es5"
+}
+```
+
+Biome (biome.json)
+
+```json
+{
+  "javascript": {
+    "formatter": { "trailingComma": "es5" }
+  }
+}
+```
 
 
 ## まとめ
