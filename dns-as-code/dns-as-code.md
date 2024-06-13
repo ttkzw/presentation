@@ -1,15 +1,15 @@
 ---
 marp: true
-title: DNS as Code — CI/CDを利用したゾーン管理 —
+title: DNS as Code — CI/CDを利用したゾーン運用 —
 size: 16:9
 theme: my-theme
 headingDivider: 4
-header: "DNS as Code — CI/CDを利用したゾーン管理 —"
+header: "DNS as Code — CI/CDを利用したゾーン運用 —"
 footer: "TAKIZAWA, Takashi"
 paginate: true
 ---
 
-# DNS as Code<br>— CI/CDを利用したゾーン管理 —
+# DNS as Code<br>— CI/CDを利用したゾーン運用 —
 <!--
 class: title
 _header: ""
@@ -38,7 +38,7 @@ class: body
 - “DNS as Code”の実装
     - DNSControl
     - octoDNS
-
+- CI/CDを利用したゾーン運用
 
 ## クラウド時代におけるDNSゾーン運用の課題
 <!--
@@ -450,28 +450,42 @@ class: body
 - 2017年4月11日：ブログ記事『[Introducing DnsControl – “DNS as Code” has Arrived](https://blog.serverfault.com/2017/04/11/introducing-dnscontrol-dns-as-code-has-arrived/)』
 - 2023年5月19日：v4.0.1リリース
 
-### DNSControlの概要
+### DNSControlが行うこと
 
-- 公式サイト（https://dnscontrol.org/）より
-    - DNSデータを高レベルDSとして管理し、マクロや変数を使用して更新を容易にする
-    - ベンダーロックインを排除。DNSプロバイダーを、いつでも、簡単に、完全にそのまま切り替えられる
-    - BIND、AWS Route 53、Google DNS、name.comなど35以上のDNSプロバイダーをサポート
-    - DNSゾーンデータにGit（または任意のVCS）のすべての利点を。履歴を見たり、PRを受け入れたり
+- 設定ファイルに記述されたゾーンデータをAPIでDNSプロバイダーに反映させる
+![h:350px](images/dnscontrol.svg)
 
-### DNSControlの概要
+### 複数のDNSプロバイダーへの対応
 
-- 公式サイト（https://dnscontrol.org/）より
-    - IPアドレスを定数に割り当て、コンフィギュレーション全体でその変数名を使用する
-    - 障害ポイントの削減：デュアルDNSプロバイダーを簡単に維持し、ダウンしたDNSプロバイダーを簡単に停止できる
-    - CI/CDの原則をDNSに適用する：ユニットテスト、システムテスト、自動デプロイメント
-    - SPFオプティマイザでDNSを最適化。多すぎるルックアップを検出。フラット化
+- 複数のDNSプロバイダーにも反映できる
+![h:350px](images/dnscontrol-multi.svg)
+
+### 対応しているDNSサービスプロバイダー
+
+- Akamai Edge DNS
+- Amazon Route 53
+- Azure DNS
+- Cloudflare
+- Google Cloud DNS
+- 他、40プロバイダー以上
+
+### 対応しているその他のプロバイダー
+
+- AXFR+DDNS
+    - ゾーンの取得にゾーン転送を利用、更新にDynamic Update
+- BIND
+    - マスターファイルを更新
+- DNS-over-HTTPS
+    - NSレコードが正しいか確認するだけの機能
+- Microsoft DNS Server on Microsoft Windows Server
+- PowerDNS
 
 ### DNSControlの設定ファイル
 
-- creds.json：プロバイダー定義（認証情報含む）
+- creds.json：プロバイダー設定（認証情報含む）
 - dnsconfig.js：ゾーン設定
 
-#### プロバイダー定義（認証情報含む）
+#### プロバイダー設定（認証情報含む）
 
 - creds.json
 
@@ -489,7 +503,7 @@ class: body
 - `TYPE`はプロバイダーのタイプ識別子
 - 他のパラメーターは認証情報やAPIに関連するもので、プロバイダーにより異なる
 
-#### ゾーンファイル（レジストラー、プロバイダー定義）
+#### ゾーン設定（レジストラー、プロバイダー指定）
 
 - dnsconfig.js
 
@@ -502,7 +516,7 @@ var DSP_SAKURACLOUD = NewDnsProvider("sakuracloud");
 - `NewRegistrar`にはレジストラーを指定する。なければ、`none`を指定する
 - `NewDnsProvider`にはcreds.jsonに記述したプロバイダーを指定する
 
-#### ゾーンファイル（ゾーン定義）
+#### ゾーン設定（ゾーンデータ）
 
 - dnsconfig.js
 
@@ -519,9 +533,33 @@ END);
 - リソースタイプごとの修飾子を使ってリソースレコードを記述する
 - リソースタイプによってはRDATAをそのまま記述するのではなく、要素ごとに記述する
 
-### DNSControlの実行例
+### DNSControlによるプロバイダーへの反映の実行例
 
 - 実行例からどういうことができるかを確認する
+
+#### 変更前の状態
+
+- 次のリソースレコードが登録されているとする（コントロールパネル）
+![](images/dnscontrol-cp01.png)
+
+#### 設定内容
+
+- dnsconfig.jsの内容
+
+```javascript
+var REG_NONE = NewRegistrar("none");
+var DSP_SAKURACLOUD = NewDnsProvider("sakuracloud");
+
+D("dnsbeer.com", REG_NONE, DnsProvider(DSP_SAKURACLOUD),
+  DefaultTTL(3600),
+  HTTPS("@", 1, "pale-ale.dnsbeer.com.", ""),
+  A("pale-ale", "192.0.2.1"),
+END);
+```
+
+- Zone apexのHTTPSレコードの追加
+- pilsnerのAレコードの削除
+- TTLをデフォルト値に変更
 
 #### プレビュー
 
@@ -545,7 +583,12 @@ dnscontrol push
 
 - 作成、更新、削除されるリソースレコードが表示され、プロバイダーに反映される
 
-#### インポート（マスターファイル形式）
+#### 反映したことの確認
+
+- コントロールパネル
+![](images/dnscontrol-cp02.png)
+
+#### ゾーンデータの取得（マスターファイル形式）
 
 ```sh
 dnscontrol get-zones --format=zone プロバイダー - ゾーン
@@ -553,9 +596,10 @@ dnscontrol get-zones --format=zone プロバイダー - ゾーン
 
 ![dnscontrol get-zones](images/dnscontrol-get-zones-zone.png)
 
-- 既存のプロバイダーからゾーンをインポートしたいときに利用できる
+- ゾーンデータを取得できる
+- DNSプロバイダーの移行のために、ゾーンデータを取得するのに利用できる
 
-#### インポート（dnscontrolの形式）
+#### ゾーンデータの取得（DNSControlの形式）
 
 ```sh
 dnscontrol get-zones --format=js プロバイダー - ゾーン
@@ -563,7 +607,8 @@ dnscontrol get-zones --format=js プロバイダー - ゾーン
 
 ![dnscontrol get-zonews](images/dnscontrol-get-zones-js.png)
 
-- 新規に利用開始するときにはこのコマンドを使うとよい
+- dnsconfig.jsの形式で取得できる
+- DNSControlの新規利用開始時にこのコマンドを使うとよい
 
 #### リソースタイプについての注意点
 
@@ -575,18 +620,13 @@ dnscontrol get-zones --format=js プロバイダー - ゾーン
 
 #### SPF_BUILDER
 
+- SPF用のTXTレコードを生成してくれる
 - 10 DNS lookupsのチェックあり
 - https://docs.dnscontrol.org/language-reference/domain-modifiers/spf_builder
 
 ```javascript
-D("example.com", REG_MY_PROVIDER, DnsProvider(DSP_MY_PROVIDER),
-  A("@", "10.2.2.2"),
-  MX("@", "example.com."),
   SPF_BUILDER({
     label: "@",
-    overflow: "_spf%d",
-    raw: "_rawspf",
-    ttl: "5m",
     parts: [
       "v=spf1",
       "ip4:198.252.206.0/24", // ny-mail*
@@ -596,6 +636,21 @@ D("example.com", REG_MY_PROVIDER, DnsProvider(DSP_MY_PROVIDER),
       "~all"
     ]
   }),
+```
+
+### JavaScript DSL
+
+- JavaScriptのDSLであるため、変数や演算やマクロ関数が利用できる
+- https://docs.dnscontrol.org/getting-started/examples
+
+```javascript
+var addrA = IP("1.2.3.4")
+
+var DSP_R53 = NewDnsProvider("route53_user1");
+
+D("example.com", REG_MY_PROVIDER, DnsProvider(DSP_R53),
+    A("@", addrA), // 1.2.3.4
+    A("www", addrA + 1), // 1.2.3.5
 END);
 ```
 
@@ -629,7 +684,6 @@ class: body
 - DNS as code - Tools for managing DNS across multiple providers
 - https://github.com/github/octodns
 
-
 ### 背景・経緯
 
 - 2016年10月：Dynへの大規模DDoS
@@ -637,6 +691,13 @@ class: body
 - 2017年4月27日：ブログ記事『[Enabling DNS split authority with OctoDNS](https://github.blog/2017-04-27-enabling-split-authority-dns-with-octodns/)』
 - 2017年5月31日：ブログ記事『[DNS Infrastructure at GitHub](https://github.blog/2017-05-31-dns-infrastructure-at-github/)』
 - 2023年8月1日：v1.0.0リリース
+
+### octoDNSが行うこと
+
+- ソースとして指定したDNSプロバイダーのゾーンデータをAPIでターゲットのDNSプロバイダーに反映させる
+
+
+
 
 ### CLIツール
 
@@ -652,7 +713,7 @@ $ octodns-sync --config-file=./config/production.yaml --doit
 
 
 
-#### プロバイダー定義（認証情報含む）
+#### プロバイダー設定（認証情報含む）
 
 ```yaml
 ---
@@ -749,7 +810,30 @@ class: body
 
 
 
-## 編集環境の注意点
+## CI/CDを利用したゾーン運用
+<!--
+class: heading
+-->
+
+### CI/CDを利用したゾーン運用
+<!--
+class: body
+-->
+
+
+
+## まとめ
+<!--
+class: heading
+-->
+
+### まとめ
+<!--
+class: body
+-->
+
+
+## おまけ：編集環境の注意点
 <!--
 class: heading
 -->
@@ -806,17 +890,4 @@ Biome (biome.json)
   }
 }
 ```
-
-
-## まとめ
-<!--
-class: heading
--->
-
-### まとめ
-<!--
-class: body
--->
-
-
 
