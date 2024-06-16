@@ -17,6 +17,7 @@ _footer: ""
 _paginate: false
 -->
 
+- DNS Summer Day 2024（2024年6月21日）登壇資料
 - 所属：さくらインターネット株式会社
 - 氏名：滝澤隆史
 
@@ -132,7 +133,7 @@ class: body
 ### DNSControl: A DSL for DNS as Code from StackOverflow.com
 
 - https://www.usenix.org/conference/srecon17americas/program/presentation/peterson
-![srecon-dnscontrol](images/srecon-dnscontrol.png)
+![h:450](images/srecon-dnscontrol.png)
 
 #### DNSControl: A DSL for DNS as Code from StackOverflow.com
 
@@ -143,7 +144,7 @@ class: body
 ### octoDNS - README.md(v0.8.0)
 
 - https://github.com/octodns/octodns/blob/7957a4c018f729e47ce976fa89f065284b959a52/README.md
-![README.md](images/octodns-readme-v0.8.0.png)
+![h:450](images/octodns-readme-v0.8.0.png)
 
 #### octoDNS - README.md(v0.8.0)
 
@@ -154,7 +155,7 @@ class: body
 ### Introducing DnsControl – “DNS as Code” has Arrived
 
 - https://blog.serverfault.com/2017/04/11/introducing-dnscontrol-dns-as-code-has-arrived/
-![Introducing DnsControl – “DNS as Code” has Arrived](images/introducing-dnscontrol.png)
+![h:450](images/introducing-dnscontrol.png)
 
 #### Introducing DnsControl – “DNS as Code” has Arrived
 
@@ -181,7 +182,7 @@ class: body
 ### DNS as Code
 
 - https://www.akamai.com/blog/security/dns-as-code-
-![DNS as Code](images/akamai.png)
+![h:500](images/akamai.png)
 
 #### DNS as Code
 
@@ -199,12 +200,12 @@ class: body
 ### なぜ2017年から登場したのか
 
 - 2016年10月のマネージドDNSサービスプロバイダーのDynへの大規模DDoSがきっかけ
-![Dyn Statement on 10/21/2016 DDoS Attach](images/dyn-ddos.png)
+![h:550](images/dyn-ddos.png)
 
 #### How Stack Overflow plans to survive the next DNS attack
 
 - https://blog.serverfault.com/2017/01/09/surviving-the-next-dns-attack/
-![How Stack Overflow plans to survive the next DNS attack](images/stackexchange-blog.png)
+![h:450](images/stackexchange-blog.png)
 
 #### How Stack Overflow plans to survive the next DNS attack
 
@@ -537,6 +538,8 @@ END);
 
 - 実行例からどういうことができるかを確認する
 
+※ここでの例は「さくらのクラウド　DNSアプライアンス」対応のプロバイダー（滝澤が開発中）を利用したもの。
+
 #### 変更前の状態
 
 - 次のリソースレコードが登録されているとする（コントロールパネル）
@@ -696,24 +699,56 @@ class: body
 
 - ソースとして指定したDNSプロバイダーのゾーンデータをAPIでターゲットのDNSプロバイダーに反映させる
 
+![](images/octodns.svg)
 
+### 複数のDNSプロバイダーへの対応
 
+- 複数のDNSプロバイダーにも反映できる
+![](images/octodns-multi.svg)
 
-### CLIツール
+### 対応しているDNSサービスプロバイダー
 
-- octodns-sync
-    - ソースプロバイダーのゾーン情報をターゲットプロバイダーにAPIで同期する
+- Akamai Edge DNS
+- Amazon Route 53
+- Azure DNS
+- Cloudflare DNS
+- Google Cloud DNS
+- 計23プロバイダー
 
-```sh
-$ octodns-sync --config-file=./config/production.yaml --doit
-...
-```
+### 対応しているその他のプロバイダー
+
+- Rfc2136Provider/BindProvider（ゾーン転送＋Dynamic Update）
+- EtcHostsProvider（/etc/hosts）
+- PowerDNS
+- YamlProvider（octoDNS独自のYAML形式のゾーンファイル）
+
+### 対応しているソース専用DNSプロバイダー
+
+- EnvVarSource（環境変数）
+- AxfrSource（ゾーン転送）
+- ZoneFileSource（マスターファイル）
+- TinyDnsFileSource（tinydns）
 
 ### octoDNSの設定ファイル
 
+- YAML形式の設定ファイル
+    - 設定ファイルは次の2つから構成される
+        - providers：プロバイダー設定（認証情報含む）
+        - zones：ゾーンごとのプロバイダーの指定
 
+        ```yaml
+        ---
+        providers:
+          ...
+        zones:
+          ...
+        ```
+
+- ゾーンファイル
 
 #### プロバイダー設定（認証情報含む）
+
+- 公式サイトの例より
 
 ```yaml
 ---
@@ -734,11 +769,10 @@ providers:
 
 #### ゾーンごとのプロバイダーの指定
 
+- 公式サイトの例より
+
 ```yaml
 zones:
-  # This is a dynamic zone config. The source(s), here `config`, will be
-  # queried for a list of zone names and each will dynamically be set up to
-  # match the dynamic entry.
   '*':
     sources:
       - config
@@ -746,6 +780,15 @@ zones:
       - ns1
       - route53
 ```
+
+- 動的ゾーン構成（Dynamic Zone Config）の例であるため、ゾーン名は`*`になっている
+- 静的ゾーン構成（Static Zone Config）の場合は、`example.com.`のようなゾーン名になる
+
+### ゾーンファイル
+
+- バージョン管理システムの利用やCI/CDの利用を考慮すると、ソースDNSプロバイダーとしては以下のどちらかを利用することになる
+    - YamlProvider（YAML形式のゾーンファイル）
+    - ZoneFileProvider（マスターファイル）
 
 #### ゾーンファイル（YamlProvider）
 
@@ -762,6 +805,16 @@ zones:
 #### ゾーンファイル（ZoneFileProvider）
 
 - マスターファイル形式のゾーンファイルを利用できる
+
+### CLIツール
+
+- octodns-sync
+    - ソースプロバイダーのゾーン情報をターゲットプロバイダーにAPIで同期する
+
+```sh
+$ octodns-sync --config-file=./config/production.yaml --doit
+...
+```
 
 ### octoDNSの実行例（DRY RUN）
 
@@ -792,35 +845,196 @@ $ octodns-sync --config-file=./config/production.yaml --doit
 ...
 ```
 
-### octoDNSが対応しているプロバイダー
-
-
-
-
-
-## マスターファイル（ゾーンファイル）
-<!--
-class: heading
--->
-
-### マスターファイル（ゾーンファイル）
-<!--
-class: body
--->
-
-
 
 ## CI/CDを利用したゾーン運用
 <!--
 class: heading
 -->
 
-### CI/CDを利用したゾーン運用
+### GitHub Actionsでの利用例の紹介
 <!--
 class: body
 -->
 
+- GitHub Actionsとは
+    - GitHubの継続的インテグレーションと継続的デリバリー (CI/CD) のプラットフォーム
+- GitHub Actionsを利用してDNSControlによるゾーン運用の例
 
+### GitHubのリポジトリに対して事前に行うこと
+
+- デフォルトブランチ（main）に対してルールを設定する
+    - Settings → Rules → Ruleset
+        - ☑Require a pull request before merging
+            - Required approvals: 1
+        - ☑Require status checks to pass
+- DNSプロバイダーで利用する認証情報をシークレットとして登録する
+    - Settings → Secrets and variables → Actions
+        - Repository secrets
+
+### リポジトリのファイル構成
+
+- creds.json - プロバイダー設定（認証情報含む）
+- dnsconfig.js - ゾーンファイル
+- .github/
+    - workflows/
+        - preview.yml - Pull Request作成・更新時に実行する
+        - push.yml - マージしたときに実行する
+
+### creds.json - プロバイダー設定
+
+- 認証情報を環境変数から取得するように設定する
+
+```json
+{
+  "sakuracloud": {
+    "TYPE": "SAKURACLOUD",
+    "access_token": "$SAKURACLOUD_ACCESS_TOKEN",
+    "access_token_secret": "$SAKURACLOUD_ACCESS_TOKEN_SECRET"
+  }
+}
+```
+
+### preview.yml
+
+- Pull Request作成時・更新時にワークフローを実行し、プレビューを行う
+
+```yaml
+name: preview
+on:
+  pull_request:
+    branches: [ 'main' ]
+    paths: [ 'creds.json', 'dnsconfig.js' ]
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    container:
+      image: ttkzw/dnscontrol
+    steps:
+      - uses: actions/checkout@v4
+      - name: dnscontrol preview
+        run: dnscontrol preview
+        env:
+          SAKURACLOUD_ACCESS_TOKEN: ${{ secrets.SAKURACLOUD_ACCESS_TOKEN }}
+          SAKURACLOUD_ACCESS_TOKEN_SECRET: ${{ secrets.SAKURACLOUD_ACCESS_TOKEN_SECRET }}
+```
+
+### push.yml
+
+- mainブランチにマージするときにワークフローを実行し、ゾーンデータをプロバイダーに反映する
+
+```yaml
+name: push
+on:
+  push:
+    branches: [ 'main' ]
+    paths: [ 'creds.json', 'dnsconfig.js' ]
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    container:
+      image: ttkzw/dnscontrol
+    steps:
+      - uses: actions/checkout@v4
+      - name: dnscontrol push
+        run: dnscontrol push
+        env:
+          SAKURACLOUD_ACCESS_TOKEN: ${{ secrets.SAKURACLOUD_ACCESS_TOKEN }}
+          SAKURACLOUD_ACCESS_TOKEN_SECRET: ${{ secrets.SAKURACLOUD_ACCESS_TOKEN_SECRET }}
+```
+
+### 実行例
+
+```javascript
+D("dnsbeer.com", REG_NONE, DnsProvider(DSP_SAKURACLOUD),
+  DefaultTTL(3600),
+  A("pale-ale", "192.0.2.1", TTL(1800)),
+  A("pilsner", "192.0.2.2"),
+END);
+```
+
+↓
+
+```javascript
+D("dnsbeer.com", REG_NONE, DnsProvider(DSP_SAKURACLOUD),
+  DefaultTTL(3600),
+  HTTPS("@", 1, "pale-ale.dnsbeer.com.", ""),
+  A("pale-ale", "192.0.2.1"),
+END);
+```
+
+#### git diff
+
+```diff
+$ git diff
+diff --git a/dnsconfig.js b/dnsconfig.js
+index 5d7717b..151134f 100644
+--- a/dnsconfig.js
++++ b/dnsconfig.js
+@@ -3,6 +3,6 @@ var DSP_SAKURACLOUD = NewDnsProvider("sakuracloud");
+ 
+ D("dnsbeer.com", REG_NONE, DnsProvider(DSP_SAKURACLOUD),
+   DefaultTTL(3600),
+-  A("pale-ale", "192.0.2.1", TTL(1800)),
+-  A("pilsner", "192.0.2.2"),
++  HTTPS("@", 1, "pale-ale.dnsbeer.com.", ""),
++  A("pale-ale", "192.0.2.1"),
+ END);
+```
+
+#### git commit & push
+
+```sh
+$ git commit -a -m "pilsnerの削除"
+[test 3e06266] pilsnerの削除
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+$ git push origin HEAD
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 370 bytes | 370.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To github.com:ttkzw/dns-as-code-example.git
+   bfe0ed3..3e06266  HEAD -> test
+```
+
+#### Pull Request作成
+
+![h:500](images/github-pr1.png)
+
+#### Pull Request作成
+
+![h:500](images/github-pr2.png)
+
+#### Pull Request作成
+
+![h:500](images/github-pr3.png)
+
+#### Pull Request時のGitHub Actions
+
+![h:500](images/github-actions1.png)
+
+#### マージ
+
+![h:500](images/github-pr4.png)
+
+#### マージ時のGitHub Actions
+
+![h:500](images/github-actions2.png)
+
+#### 失敗時のPull Request画面
+
+![h:500](images/github-failed1.png)
+
+#### 失敗時のGitHub Actions
+
+![h:500](images/github-failed2.png)
+
+#### 承認を必要とする設定をしたとき
+
+![h:500](images/github-approve1.png)
 
 ## まとめ
 <!--
@@ -848,6 +1062,8 @@ class: body
     - インデントのスペースの桁数が統一されていない
     - 最終行が改行で終わったり終わらなかったりする
 
+#### .editorconfig
+
 ```ini
 root = true
 
@@ -861,7 +1077,7 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 ```
 
-### .editorconfigをサポートしていないエディター
+#### .editorconfigをサポートしていないエディター
 
 - プラグインを入れて利用できるようにすることを徹底させる
     - Vim用プラグイン
