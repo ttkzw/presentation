@@ -70,17 +70,24 @@ class: body
 
 #### WebUI（コントロールパネル）起因による課題の対策1
 
-- WebUI（コントロールパネル）を使わない
+- ゾーンデータをスプレッドシートなどで管理し、WebUIにはスプレッドシートの情報を転記する
+    - 変更管理に起因する課題
+        - スプレッドシートの履歴やコメント機能によりある程度解決できる
+    - コメントの課題
+        - スプレッドシートにコメントを記述できる
+- いわゆる「運用でカバー」（辛い）
+- 本当に漏れなく運用できるのか
 
 #### WebUI（コントロールパネル）起因による課題の対策2
 
+- WebUI（コントロールパネル）を使わない
 - ゾーンデータを手元でテキストファイルとして運用し、APIを利用して、プロバイダーに反映させる
     - 変更管理に起因する課題
         - GitHubやGitLabのようなバージョン管理システムのプラットフォームを利用することで解決する
     - コメントの課題
         - コメントを記述できるフォーマットを利用すれば解決する
-    - DNSに特化したツールを利用する
-        - → “DNS as Code”（本資料のテーマ）
+- DNSに特化したツールを利用する
+    - → “DNS as Code”（本資料のテーマ）
 
 ### マネージドDNSサービスプロバイダー起因による課題
 
@@ -88,7 +95,7 @@ class: body
     - 運用しているDNSゾーンに関する名前解決ができなくなる
     - 運営しているサービスに影響がでる
 - ゾーンデータの保管
-    - プロバイダーであり、手元にはない
+    - 一次情報としてのゾーンデータはプロバイダーにあり、手元にはない
         - 運用でカバーするしかない
             - スプレッドシート管理（辛い） 
     - 取り出したいときに取り出せるとは限らない
@@ -96,25 +103,25 @@ class: body
 
 ### 大規模障害発生時の対策
 
-- あらかじめ他のプロバイダーに切り替えられる準備をしておく
-- あらかじめ複数のプロバイダーを利用する
+- あらかじめ他のDNSサービスプロバイダーに切り替えられる準備をしておく
+- あらかじめ複数のDNSサービスプロバイダーを利用する
 
-#### 他のプロバイダーに切り替えるには
+#### 他のDNSサービスプロバイダーに切り替えるには
 
 - 障害時にゾーンデータを取り出せるとは限らない
-- 一次情報としてゾーンデータを手元に持つ必要がある
+- 一次情報としてゾーンデータを手元に持つ
 
-#### 複数のプロバイダーを利用するには
+#### 複数のDNSサービスプロバイダーを利用するには
 
 - WebUI（コントロールパネル）による運用は無理がある
-- 一次情報としてゾーンデータを手元に持つ必要がある
-- APIを利用して、手元のゾーンデータを複数のプロバイダーに反映させる
+- 一次情報としてゾーンデータを手元に持ち、
+- APIを利用して、手元のゾーンデータを複数のDNSサービスプロバイダーに反映させる
 
 #### 大規模障害発生時の対策のまとめ
 
-- ゾーンデータを手元でテキストファイルとして運用し、APIを利用して、プロバイダーに反映させる
-    - DNSに特化したツールを利用する
-        - → “DNS as Code”（本資料のテーマ）
+- ゾーンデータを手元でテキストファイルとして運用し、APIを利用して、DNSサービスプロバイダーに反映させる
+- DNSに特化したツールを利用する
+    - → “DNS as Code”（本資料のテーマ）
 
 ## “DNS as Code”とは
 <!--
@@ -132,70 +139,52 @@ class: body
 
 ### DNSControl: A DSL for DNS as Code from StackOverflow.com
 
+- 2017年3月14日、SREcon17 Americas
+- Stack OverflowのSREチームのスタッフによるDNSControlの紹介
+- 同日、DNSControlをオープンソースソフトウェアとして公開
 - https://www.usenix.org/conference/srecon17americas/program/presentation/peterson
-![h:450](images/srecon-dnscontrol.png)
-
-#### DNSControl: A DSL for DNS as Code from StackOverflow.com
-
-- 2017年3月14日
-- SREcon17 AmericasでのDNSControlについての発表
-- DNSControlはDNS as Codeの実装の1つ
+![h:350](images/srecon-dnscontrol.png)
 
 ### octoDNS - README.md(v0.8.0)
 
-- https://github.com/octodns/octodns/blob/7957a4c018f729e47ce976fa89f065284b959a52/README.md
-![h:450](images/octodns-readme-v0.8.0.png)
-
-#### octoDNS - README.md(v0.8.0)
-
-- 2017年3月16日
-- octoDNSはDNS as Codeの実装の1つ
+- 2017年3月16日、octoDNS公開
 - 公開当初（v0.8.0）のREADME.mdの見出しに「DNS as code - Tools for managing DNS across multiple providers」という記述がある
+- https://github.com/octodns/octodns/blob/7957a4c018f729e47ce976fa89f065284b959a52/README.md
+![h:400](images/octodns-readme-v0.8.0.png)
 
 ### Introducing DnsControl – “DNS as Code” has Arrived
 
-- https://blog.serverfault.com/2017/04/11/introducing-dnscontrol-dns-as-code-has-arrived/
-![h:450](images/introducing-dnscontrol.png)
-
-#### Introducing DnsControl – “DNS as Code” has Arrived
-
-- 2017年4月11日
-- DNSControlはDNS as Codeの実装の1つ
-- DNSControlの開発元のStack Exchange社のブログ記事
+- 2017年4月11日、Stack Exchange社のブログでDNSControlを紹介
 - 記事のタイトルに“DNS as Code”が含まれている
+- https://blog.serverfault.com/2017/04/11/introducing-dnscontrol-dns-as-code-has-arrived/
+![h:400](images/introducing-dnscontrol.png)
 
 ### DevOps and DNS
 
+- 2017年7月、Andy Still (Intechnica), Phil Stanhope (Oracle Dyn)によるO'Reilly Mediaのレポート
+- “Chapter 4. Managing DNS in a DevOps Culture”に“DNS as Code”についての言及がある
 - https://www.oreilly.com/library/view/devops-and-dns/9781492049241/
-![DevOps and DNS](images/devops-and-dns.png)
+![h:250](images/devops-and-dns.png)
 
 #### DevOps and DNS
 
-- 2017年7月
-- 著者：Andy Still (Intechnica), Phil Stanhope (Oracle Dyn)
-- O'Reilly Mediaのレポート
-    - 注意）O’Reilly learning platformのサブスクリプションが必要
-- “Chapter 4. Managing DNS in a DevOps Culture”に“DNS as Code”についての言及がある
-- 概要箇所を要約すると
-    - すべてのDNSの変更を動的APIで管理できるようになれば、すべてのDNSレコードを含めるようにInfrastructure as Codeを拡張し、コードの変更管理をし始めることが次の論理的な段階だ
+- 該当箇所を要約すると
+    - （DevOpsの文脈で）すべてのDNSの変更を動的にAPIで管理できるようになれば、すべてのDNSレコードを含めるようにInfrastructure as Codeを拡張し、コードの変更管理をし始めることが次の段階だ
+- 注意）O’Reilly learning platformのサブスクリプションが必要
 
 ### DNS as Code
 
-- https://www.akamai.com/blog/security/dns-as-code-
-![h:500](images/akamai.png)
-
-#### DNS as Code
-
-- 2020年6月
-- Akamai社のブログ
+- 2020年6月、Akamai社のブログ
 - Edge DNSのDNSゾーンの管理にTerraformを利用する例を紹介している
-- 実はぐぐるとトップに出てくる
+- https://www.akamai.com/blog/security/dns-as-code-
+![h:350](images/akamai.png)
 
-### “DNS as Code”とは結局は何なの
+
+### “DNS as Code”とは結局は何なのか
 
 - 2017年から登場した言葉のようである
 - Infrastructure as Code (IaC)をDNSに特化したもの
-- DNSゾーンをコードとして管理し、ツールを使ってゾーンデータをDNSサービスに反映する
+- DNSゾーンをコードとして管理し、ツールを使ってゾーンデータをDNSサービスプロバイダーに反映する
 
 ### なぜ2017年から登場したのか
 
@@ -204,18 +193,17 @@ class: body
 
 #### How Stack Overflow plans to survive the next DNS attack
 
+- 2017年1月に公開されたStack Exchange社のブログ
 - https://blog.serverfault.com/2017/01/09/surviving-the-next-dns-attack/
-![h:450](images/stackexchange-blog.png)
+![h:400](images/stackexchange-blog.png)
 
 #### How Stack Overflow plans to survive the next DNS attack
 
-- 2017年1月に公開されたStack Exchange社のブログ
 - 2016年10月のDynへの大規模DDoS攻撃を背景として、次に同様な攻撃が発生したときにどのようなアプローチをとれるかを検討した記事
     - さまざまなDNSプロバイダーとその選択方法をベンチマークする
     - 複数のDNSプロバイダーを導入する
     - DNSを意図的に破壊し、その影響を測定する
     - 我々の仮定を検証し、DNS標準の実装をテストする
-- その後、DNSControlを公開することになる
 
 #### “DNS as Code”の実装が公開
 
@@ -230,7 +218,7 @@ class: body
         - octoDNS: YAML、マスターファイル
     - 複数のDNSサービスプロバイダーに対応
     - 既存のDNSサービスプロバイダーからのインポートに対応
-    - プレビュー/Dry Run機能により実際に登録されているゾーンデータからの更新内容の確認
+    - プレビュー/dry-run機能により実際に登録されているゾーンデータからの更新内容の確認
 
 ### コード（テキストファイル）であることの利点
 
@@ -250,7 +238,7 @@ class: body
     - プルリクエストやマージリクエスト
 - CI（継続的インテグレーション）が利用できる
     - 構文チェック
-    - 更新内容の確認（プレビュー/Dry Run機能の利用）
+    - 更新内容の確認（プレビュー/dry-run機能の利用）
 - CD（継続的デリバリー）が利用できる
     - DNSサービスプロバイダーへのゾーンの反映
 
@@ -268,8 +256,6 @@ class: body
 - [Terraform](https://www.terraform.io/)/[OpenTofu](https://opentofu.org/)
 - [DNSControl](https://github.com/StackExchange/dnscontrol)
 - [octoDNS](https://github.com/octodns/octodns)
-
-本資料では特定のマネージドDNSサービスプロバイダー依存ではないツールとしてDNSControlとoctoDNSを主に取り上げる。
 
 ### リソースレコードの記述例
 
@@ -422,6 +408,12 @@ test 300 IN A 192.0.2.1
 - DNSControlとoctoDNSとマスターファイル
     - DNSに特化しているため、記述が簡潔である
 
+### DNS as Codeの実装の紹介
+
+- 特定のDNSサービスプロバイダー依存ではないツールとして次の2つのツールを紹介する
+    - DNSControl
+    - octoDNS
+
 ## DNSControl
 <!--
 class: heading
@@ -432,15 +424,10 @@ class: heading
 class: body
 -->
 
-- Stack Exchange社が開発しているDNSゾーンの保守ツール
+- Stack Exchange社が開発・保守しているDNSゾーンの保守ツール
     - Stack Exchange社はStack Overflow（開発者向けのQ&Aサイト）やServer Fault（システム・ネットワーク管理者向けのQ&Aサイト）の運営元
 - 公式サイト
     - https://docs.dnscontrol.org/
-- 次の2つから構成される
-    - DNSゾーンを記述するDSL
-        - DSL: ドメイン固有言語、domain specific language
-    - DSLを処理し、DNSプロバイダーにゾーン情報を反映するソフトウェア
-
 
 ### 背景・経緯
 
@@ -469,6 +456,8 @@ class: body
 - Cloudflare
 - Google Cloud DNS
 - 他、40プロバイダー以上
+
+※注記）本資料の実行例は「さくらのクラウド　DNSアプライアンス」対応のDNSControl用のプロバイダーSAKURACLOUD（滝澤が開発中）を利用したものであり、現時点では正式リリースはされていない。
 
 ### 対応しているその他のプロバイダー
 
@@ -513,7 +502,8 @@ var REG_NONE = NewRegistrar("none");
 var DSP_SAKURACLOUD = NewDnsProvider("sakuracloud");
 ```
 
-- ゾーンの定義はJavaScriptの記法で行う。あらかじめ、関数や修飾子が用意されている
+- ゾーンの設定はJavaScriptの記法で行う
+- マクロとして利用できる関数や修飾子が用意されている
 - `NewRegistrar`にはレジストラーを指定する。なければ、`none`を指定する
 - `NewDnsProvider`にはcreds.jsonに記述したプロバイダーを指定する
 
@@ -525,20 +515,19 @@ var DSP_SAKURACLOUD = NewDnsProvider("sakuracloud");
 D("dnsbeer.com", REG_NONE, DnsProvider(DSP_SAKURACLOUD),
   DefaultTTL(3600),
   HTTPS("@", 1, "pale-ale.dnsbeer.com.", ""),
-  A("pale-ale", "192.0.2.2"),
+  A("pale-ale", "192.0.2.1"),
 END);
 ```
 
 - ゾーンは関数`D`の引数として記述し、引数は`END`で終わる
 - ゾーン名（“.”で終わらない）、レジストラー、プロバイダーを指定する
-- リソースタイプごとの修飾子を使ってリソースレコードを記述する
-- リソースタイプによってはRDATAをそのまま記述するのではなく、要素ごとに記述する
+- リソースレコードタイプごとの修飾子を使ってリソースレコードを記述する
+- リソースレコードタイプによってはRDATAをそのまま記述するのではなく、要素ごとに記述する
 
-### DNSControlによるプロバイダーへの反映の実行例
+### DNSControlによるDNSプロバイダーへの反映の実行例
 
 - 実行例からどういうことができるかを確認する
 
-※ここでの例は「さくらのクラウド　DNSアプライアンス」対応のプロバイダー（滝澤が開発中）を利用したもの。
 
 #### 変更前の状態
 
@@ -560,7 +549,7 @@ D("dnsbeer.com", REG_NONE, DnsProvider(DSP_SAKURACLOUD),
 END);
 ```
 
-- Zone apexのHTTPSレコードの追加
+- HTTPSレコードの追加
 - pilsnerのAレコードの削除
 - TTLをデフォルト値に変更
 
@@ -613,11 +602,11 @@ dnscontrol get-zones --format=js プロバイダー - ゾーン
 - dnsconfig.jsの形式で取得できる
 - DNSControlの新規利用開始時にこのコマンドを使うとよい
 
-#### リソースタイプについての注意点
+#### リソースレコードタイプについての注意点
 
 - SOA：ほとんどの場合はプロバイダー側で管理しているため、記述不要
 - NS：変更できないプロバイダーの場合は記述不要
-- ALIAS：疑似リソースタイプはプロバイダーが対応していれば利用できる
+- ALIAS：疑似リソースレコードタイプはDNSプロバイダーが対応していれば利用できる
 - TXT：SPFやDMARCを利用するときには`SPF_BUILDER`や`DMARC_BUILDER`を利用できる
 - CAA：`CAA_BUILDER`を利用できる
 
@@ -683,9 +672,9 @@ class: heading
 class: body
 -->
 
-- GitHub社が開発・保守しているオープンソースソフトウェア
-- DNS as code - Tools for managing DNS across multiple providers
-- https://github.com/github/octodns
+- GitHub社が開発・保守しているDNSゾーンの保守ツール
+- 公式サイト
+    - https://github.com/github/octodns
 
 ### 背景・経緯
 
@@ -715,19 +704,47 @@ class: body
 - Google Cloud DNS
 - 計23プロバイダー
 
+※注記）本資料の実行例は「さくらのクラウド　DNSアプライアンス」対応のプロバイダーパッケージoctodns-sakuracloud（滝澤が開発中）を利用したものであり、現時点では正式リリースはされていない。
+
 ### 対応しているその他のプロバイダー
 
-- Rfc2136Provider/BindProvider（ゾーン転送＋Dynamic Update）
-- EtcHostsProvider（/etc/hosts）
+- Rfc2136Provider/BindProvider
+    - ゾーン転送＋Dynamic Update
+- EtcHostsProvider
+    - /etc/hosts
 - PowerDNS
-- YamlProvider（octoDNS独自のYAML形式のゾーンファイル）
+- YamlProvider
+    - octoDNS独自のYAML形式のゾーンファイル
 
 ### 対応しているソース専用DNSプロバイダー
 
-- EnvVarSource（環境変数）
-- AxfrSource（ゾーン転送）
-- ZoneFileSource（マスターファイル）
-- TinyDnsFileSource（tinydns）
+- EnvVarSource
+    - 環境変数
+- AxfrSource
+    - ゾーン転送
+- ZoneFileSource
+    - マスターファイル
+- TinyDnsFileSource
+    - tinydns
+
+### インストール
+
+- DNSプロバイダーごとにPythonパッケージとして提供されているため、利用するDNSプロバイダーのパッケージをインストールする
+
+    ```sh
+    pip3 install octodns
+    pip3 install パッケージ名
+    ```
+
+- 例えば、ゾーンファイルを利用したいときには次のようにする
+
+    ```sh
+    pip3 install octodns
+    pip3 install octodns-bind
+    ```
+
+- パッケージの一覧は公式サイトの「Providers」に掲載されている
+    - https://github.com/octodns/octodns/blob/main/README.md#providers
 
 ### octoDNSの設定ファイル
 
@@ -744,106 +761,237 @@ class: body
           ...
         ```
 
-- ゾーンファイル
-
 #### プロバイダー設定（認証情報含む）
 
-- 公式サイトの例より
-
 ```yaml
----
 providers:
-  config:
-    class: octodns.provider.yaml.YamlProvider
-    directory: ./config
-    default_ttl: 3600
-    enforce_order: True
-  ns:
-    class: octodns_ns1.Ns1Provider
-    api_key: env/NS1_API_KEY
-  route53:
-    class: octodns_route53.Route53Provider
-    access_key_id: env/AWS_ACCESS_KEY_ID
-    secret_access_key: env/AWS_SECRET_ACCESS_KEY
+  zonefile:
+    class: octodns_bind.ZoneFileSource
+    directory: ./zones
+    file_extension: .zone
+    check_origin: false
+  sakuracloud:
+    class: octodns_sakuracloud.SakuraCloudProvider
+    access_token: env/SAKURACLOUD_ACCESS_TOKEN
+    access_token_secret: env/SAKURACLOUD_ACCESS_TOKEN_SECRET
 ```
 
-#### ゾーンごとのプロバイダーの指定
+- `zonefile`や`sakuracloud`はプロバイダーを指定する任意の名前
+- `class`はプロバイダーのクラス
+- 他のパラメーターは認証情報やAPIに関連するもので、プロバイダーにより異なる
 
-- 公式サイトの例より
+#### ゾーンごとのプロバイダーの指定
 
 ```yaml
 zones:
   '*':
     sources:
-      - config
+      - zonefile
     targets:
-      - ns1
-      - route53
+      - sakuracloud
 ```
 
+- `sources`にソースDNSプロバイダー、`targets`にターゲットDNSプロバイダーを指定する
 - 動的ゾーン構成（Dynamic Zone Config）の例であるため、ゾーン名は`*`になっている
-- 静的ゾーン構成（Static Zone Config）の場合は、`example.com.`のようなゾーン名になる
+- 静的ゾーン構成（Static Zone Config）の場合は、`example.com.`（`.`で終わる）のようなゾーン名になる
 
 ### ゾーンファイル
 
 - バージョン管理システムの利用やCI/CDの利用を考慮すると、ソースDNSプロバイダーとしては以下のどちらかを利用することになる
     - YamlProvider（YAML形式のゾーンファイル）
-    - ZoneFileProvider（マスターファイル）
+    - ZoneFileSource（マスターファイル）
 
 #### ゾーンファイル（YamlProvider）
 
 ```yaml
 ---
-'':
-  ttl: 60
+"":
+  ttl: 3600
+  type: HTTPS
+  value:
+    svcparams: {}
+    svcpriority: 0
+    targetname: pale-ale.dnsbeer.com.
+pale-ale:
+  ttl: 3600
   type: A
-  values:
-    - 1.2.3.4
-    - 1.2.3.5
+  value: 192.0.2.1
 ```
 
-#### ゾーンファイル（ZoneFileProvider）
+- `value`（1個の場合）あるいは`values`（複数の場合）はタイプにより記述形式が異なる
+
+
+#### ゾーンファイル（ZoneFileSource）
 
 - マスターファイル形式のゾーンファイルを利用できる
+- ただし、利用できるリソースタイプには制限がある
+    - A, AAAA, CAA, CNAME, LOC, MX, NS, PTR, SPF, SRV, SSHFP, TLSA, TXT
+- ターゲットDNSプロバイダーにおいて、ゾーン頂点のSOAレコードやNSレコードが変更できないときには次の設定を追加する
+    - `check_origin: false`
+
 
 ### CLIツール
 
 - octodns-sync
-    - ソースプロバイダーのゾーン情報をターゲットプロバイダーにAPIで同期する
+
+    ```sh
+    octodns-sync --config-file=config.yaml --doit
+    ```
+
+    - ソースDNSプロバイダーのゾーン情報をターゲットDNSプロバイダーにAPIで同期する
+    - デフォルトはdry-runで動作する
+    - `--doit`オプションを付けることでDNSプロバイダーに反映させる
+
+### octoDNSによるDNSプロバイダーへの反映の実行例
+
+- 実行例からどういうことができるかを確認する
+
+#### 変更前の状態
+
+- 次のリソースレコードが登録されているとする（コントロールパネル）
+![h:400](images/octodns-cp01.png)
+
+#### マスターファイル
+
+- zones/dnsbeer.com.zone
+
+    ```
+    $TTL 3600
+    pale-ale    IN  A       192.0.2.1
+    porter      IN  A       192.0.2.3
+    ```
+
+- pilsnerの削除
+- porterの追加
+- TTLの変更
+
+#### dry-runの実行
+
+- デフォルトはdry-runとして動作する
 
 ```sh
-$ octodns-sync --config-file=./config/production.yaml --doit
+$ octodns-sync --config-file=config.yaml
+...
+**********************************************************************
+* dnsbeer.com.
+**********************************************************************
+* sakuracloud (SakuraCloudProvider)
+*   Delete <ARecord A 1800, pilsner.dnsbeer.com., ['192.0.2.2']>
+*   Create <ARecord A 3600, porter.dnsbeer.com., ['192.0.2.3']> ()
+*   Update
+*     <ARecord A 1800, pale-ale.dnsbeer.com., ['192.0.2.1']> ->
+*     <ARecord A 3600, pale-ale.dnsbeer.com., ['192.0.2.1']> ()
+*   Summary: Creates=1, Updates=1, Deletes=1, Existing Records=2
+**********************************************************************
 ...
 ```
 
-### octoDNSの実行例（DRY RUN）
+#### DNSプロバイダーへの反映
 
-- デフォルトはDRY RUNとして動作する
-
-```sh
-$ octodns-sync --config-file=./config/production.yaml
-...
-********************************************************************************
-* example.com.
-********************************************************************************
-* route53 (Route53Provider)
-*   Create <ARecord A 60, example.com., [u'1.2.3.4', '1.2.3.5']>
-*   Summary: Creates=1, Updates=0, Deletes=0, Existing Records=0
-* dyn (DynProvider)
-*   Create <ARecord A 60, example.com., [u'1.2.3.4', '1.2.3.5']>
-*   Summary: Creates=1, Updates=0, Deletes=0, Existing Records=0
-********************************************************************************
-...
-```
-
-### octoDNSの実行例（反映）
-
-- 実際に反映するためには --doitオプションを付ける
+- 実際に反映するためには`--doit`オプションを付ける
 
 ```sh
-$ octodns-sync --config-file=./config/production.yaml --doit
+$ octodns-sync --config-file=config.yaml --doit
 ...
+**********************************************************************
+* dnsbeer.com.
+**********************************************************************
+* sakuracloud (SakuraCloudProvider)
+*   Delete <ARecord A 1800, pilsner.dnsbeer.com., ['192.0.2.2']>
+*   Create <ARecord A 3600, porter.dnsbeer.com., ['192.0.2.3']> ()
+*   Update
+*     <ARecord A 1800, pale-ale.dnsbeer.com., ['192.0.2.1']> ->
+*     <ARecord A 3600, pale-ale.dnsbeer.com., ['192.0.2.1']> ()
+*   Summary: Creates=1, Updates=1, Deletes=1, Existing Records=2
+**********************************************************************
+
+2024-06-18T10:15:54  [8456129536] INFO  SakuraCloudProvider[sakuracloud] 
+apply: making 3 changes to dnsbeer.com.
+2024-06-18T10:15:55  [8456129536] INFO  Manager sync:   3 total changes
 ```
+
+#### 反映したことの確認
+
+- コントロールパネル
+![h:400](images/octodns-cp02.png)
+
+### ゾーンデータの取得（YAML形式）
+
+- octodns-dumpを利用して、YAML形式で取得できる
+- octoDNSの新規利用開始時にこのコマンドを使うとよい
+
+```sh
+$ octodns-dump --config-file config.yaml --output-dir zones 
+ dnsbeer.com. sakuracloud
+...
+
+$ cat zones/dnsbeer.com.yaml 
+---
+pale-ale:
+  type: A
+  value: 192.0.2.1
+porter:
+  type: A
+  value: 192.0.2.3
+```
+
+### ゾーンデータの取得（マスターファイル形式）
+
+- マスターファイル形式としては取得できない
+- ZoneFileSourceはソース専用のDNSプロバイダーであるため
+- 試しにoctodns-dumpを実行するとエラーが発生する
+
+```sh
+$ octodns-dump --config-file config.yaml --output-dir zones 
+ --output-provider zonefile dnsbeer.com. sakuracloud
+...
+octodns.manager.ManagerException: output_provider=zonefile, 
+does not support copy method
+```
+
+### 注意点 - リソースレコードタイプ
+
+- プロバイダーによっては、ゾーン頂点のSOAレコードとNSレコードは扱えない
+- プロバイダーにより対応しているリソースレコードタイプは異なる
+    - 特にHTTPSとSVCBはoctoDNSの公式ドキュメント上ではサポートされていない
+        - プロバイダーもサポートしていない
+        - 内部的には扱えるようになっているので実はYamlProviderでは利用できる
+- ALIASのような疑似リソースレコードタイプはプロバイダーがサポートしていれば利用できる
+
+### 注意点 - 安全機能
+
+- ゾーンに10個以上のリソースレコードセットが存在するときに、次のそれぞれの場合は中断される
+    - 全体の30%以上のリソースレコードセットが更新される場合
+    - 全体の30%以上のリソースレコードセットが削除される場合
+- `--force`オプションを付けて実行すると、この安全機能は無視される
+
+```sh
+$ octodns-sync --config-file config.yaml
+...
+octodns.provider.plan.TooMuchChange: [dnsbeer.com.] 
+Too many updates, 100.00% is over 30.00% (10/10), force required
+```
+
+### 注意点 - APIリクエスト
+
+- 1回のAPIリクエストで更新できるリソースレコードセットの数はプロバイダーにより異なる
+    - ゾーンのリソースレコードセットをまとめて更新できるもの
+    - 複数のリソースレコードセットの更新を一度にできるもの
+    - 1個のリソースレコードセットの更新しかできないもの
+- 1回のリクエストで1個のリソースレコードセットしか更新できない場合は、リソースレコードセットの数だけAPIへのリクエストを行うため、更新に時間がかかる
+
+
+### その他のコマンド
+
+- octodns-compare
+    - 2つのDNSプロバイダー間のゾーンを比較する
+    - DNSプロバイダーの移行時のゾーン登録内容の比較にも利用できる
+- octodns-report
+    - ソースプロバイダーのDNSプロバイダーのゾーンとDNS権威サーバーへのDNSクエリー結果を比較する
+- octodns-validate
+    - 設定ファイルを検査する
+- octodns-versions
+    - バージョンを表示して終了する
 
 
 ## CI/CDを利用したゾーン運用
@@ -865,8 +1013,10 @@ class: body
 - デフォルトブランチ（main）に対してルールを設定する
     - Settings → Rules → Ruleset
         - ☑Require a pull request before merging
-            - Required approvals: 1
+            - Required approvals: 1 ←承認が必要な場合
         - ☑Require status checks to pass
+            - Status checks that are required
+                - PR時に実行するGitHub Actionsを指定
 - DNSプロバイダーで利用する認証情報をシークレットとして登録する
     - Settings → Secrets and variables → Actions
         - Repository secrets
@@ -1046,16 +1196,33 @@ class: heading
 class: body
 -->
 
+- “DNS as Code”とは
+    - Infrastructure as Code (IaC)をDNSに特化したもの
+    - DNSゾーンをコードとして管理し、ツールを使ってゾーンデータをDNSサービスに反映する
+- “DNS as Code”の主要な実装であるDNSControlとoctoDNSの紹介
+- GitHub ActionsとDNSControlを利用したCI/CDの例
 
-## おまけ：編集環境の注意点
+## おまけ
 <!--
 class: heading
 -->
 
-### .editorconfig
+## プロバイダーパッケージの作成
 <!--
 class: body
 -->
+
+- DNSサービスプロバイダーがAPIを公開していれば、プロバイダーパッケージを作成できる
+- 開発言語
+    - DNSControl: Go言語
+    - octoDNS: Python
+- 今回、実行例として利用したものはそれぞれ
+    - とりあえず動くようにするだけであれば1、2日あればできる
+    - DNSサービスプロバイダーの制限に基づく例外的な処理とかテストとかドキュメント作成を加えて数日といったところ
+    - 公開およびコントリビュートする予定
+
+
+### .editorconfig
 
 - 複数人で編集したときに以下のことが生じないように`.editorconfig`を用意する
     - タブとスペースが混在する
@@ -1089,21 +1256,21 @@ insert_final_newline = true
 
 ### JavaScriptのフォーマッターの設定
 
-Prettier (.prettier)
+- DNSControlでは`trailingComma`の設定を`es5`にする
+- Prettier (.prettier)
 
-```json
-{
-  "trailingComma": "es5"
-}
-```
+    ```json
+    {
+      "trailingComma": "es5"
+    }
+    ```
 
-Biome (biome.json)
+- Biome (biome.json)
 
-```json
-{
-  "javascript": {
-    "formatter": { "trailingComma": "es5" }
-  }
-}
-```
-
+    ```json
+    {
+      "javascript": {
+        "formatter": { "trailingComma": "es5" }
+      }
+    }
+    ```
