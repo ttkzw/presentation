@@ -53,11 +53,10 @@ class: body
 -->
 
 - マネージドDNSサービスを利用することが主流になっている
-- DNSゾーンの運用にAPIを利用したい
-- APIを利用可能なサービスでは、
-    - SDK（ソフトウェア開発キット）やツールが提供されていれば、それを利用してゾーンを運用できる
-    - SDKやツールはクラウドサービスを統合管理して利用するには便利だが、DNSゾーンの運用に利用するには煩雑である（後述）
-- 結局、WebUI（コントロールパネル）を利用する
+- APIを利用可能なサービス
+    - サービスプロバイダーからSDK（ソフトウェア開発キット）やツールが提供されていれば、それを利用してゾーンを運用できる
+    - SDKやツールはクラウドサービスを統合管理して利用するには便利だが、DNSゾーンの運用に利用するには煩雑である
+- 結局、WebUI（コントロールパネル）を利用している人が多いでしょう
 
 ### WebUI（コントロールパネル）起因による課題
 
@@ -77,8 +76,6 @@ class: body
         - GitHubやGitLabのようなバージョン管理システムのプラットフォームを利用することで解決する
     - コメントの課題
         - コメントを記述できるフォーマットを利用すれば解決する
-- このために、DNSに特化したツールを利用する
-    - → “DNS as Code”（本資料のテーマ）
 
 ### マネージドDNSサービスの大規模障害による課題
 
@@ -89,39 +86,51 @@ class: body
     - 一次情報としてのゾーンデータはマネージドDNSサービスにあり、手元にはない
         - 運用でカバー
             - スプレッドシート管理（辛い） 
-    - 取り出したいときに取り出せるとは限らない
+    - ゾーンデータを取り出したいときに取り出せるとは限らない
         - 障害時に取り出せるとは思えない
 
-#### マネージドDNSサービスの大規模障害による課題の対策1
+#### マネージドDNSサービスの大規模障害による課題の対策、その1
 
 - あらかじめ他のマネージドDNSサービスに切り替えられる準備をしておく
     - 障害時にゾーンデータを取り出せるとは限らない
     - 一次情報としてゾーンデータを手元に持ち、APIを利用して、手元のゾーンデータをマネージドDNSサービスに反映させる
     - 大規模障害時にはゾーンデータの反映先のマネージドDNSサービスを切り替える
-- このために、DNSに特化したツールを利用する
-    - → “DNS as Code”（本資料のテーマ）
 
-#### マネージドDNSサービスの大規模障害による課題の対策2
+#### マネージドDNSサービスの大規模障害による課題の対策、その2
 
 - あらかじめ複数のマネージドDNSサービスを利用する
     - WebUI（コントロールパネル）による運用は無理がある
     - 一次情報としてゾーンデータを手元に持ち、APIを利用して、手元のゾーンデータを複数のマネージドDNSサービスに反映させる
-- DNSに特化したツールを利用する
-    - → “DNS as Code”（本資料のテーマ）
+
+### 課題の対策のまとめ
+
+- 一次情報としてゾーンデータを手元に持つ
+- APIを利用して、手元のゾーンデータをマネージドDNSサービスに反映させる
+
+### “DNS as Code”
+
+> APIを利用して、手元のゾーンデータをマネージドDNSサービスに反映させる
+
+- どこかで見た光景
+    - ITインフラの状態をコードで定義し、APIによりITインフラに反映させる
+    - → Infrastructure as Code
+- DNSに特化する
+    - 「インフラ」を「DNSゾーン」に置き換える
+    - DNSゾーンの状態をコードで定義し、APIによりDNSゾーンに反映させる
+    - → “DNS as Code”
 
 ## “DNS as Code”とは
 <!--
 class: heading
 -->
 
-
 ### “DNS as Code”とは
 <!--
 class: body
 -->
 
-- “DNS as Code”を明確に定義したものはない
-- “DNS as Code”に言及されている情報を見ていく
+- “DNS as Code”を明確に定義した文章はない
+- “DNS as Code”に言及している情報を見ていく
 
 ### DNSControl: A DSL for DNS as Code from StackOverflow.com
 
@@ -170,7 +179,7 @@ class: body
 
 - 2017年から登場した言葉のようである
 - Infrastructure as CodeをDNSに特化したもの
-- DNSゾーンをコードとして管理し、ツールを使ってゾーンデータをDNSサービスに反映する
+- DNSゾーンの状態をコードで定義し、APIによりDNSゾーンに反映させる
 
 ### なぜ2017年から登場したのか
 
@@ -421,50 +430,7 @@ D("example.com", REG_MY_PROVIDER, DnsProvider(DSP_R53),
     A("www", addrA + 1), // 1.2.3.5
 END);
 ```
-
-### 注意点 - リソースレコードタイプ
-
-- SOA：ほとんどの場合はDNSプロバイダー側で管理しているため、記述不要
-- NS：変更できないDNSプロバイダーの場合は記述不要
-- ALIAS：疑似リソースレコードタイプはDNSプロバイダーが対応していれば利用できる
-- TXT：SPFやDMARCを利用するときには`SPF_BUILDER`や`DMARC_BUILDER`を利用できる
-- CAA：`CAA_BUILDER`を利用できる
-
-#### SPF_BUILDER
-
-- SPF用のTXTレコードを生成してくれる
-- 10 DNS lookupsのチェックあり
-- https://docs.dnscontrol.org/language-reference/domain-modifiers/spf_builder
-
-```javascript
-  SPF_BUILDER({
-    label: "@",
-    parts: [
-      "v=spf1",
-      "ip4:198.252.206.0/24", // ny-mail*
-      "ip4:192.111.0.0/24", // co-mail*
-      "include:_spf.google.com", // GSuite
-      略
-      "~all"
-    ]
-  }),
-```
-
-### 注意点 - フォーマッター
-
-- PrettierやBiomeなどのフォーマッターを利用していると次のように整形されることがある
-- DNSControlにおいては最後に引数の末尾のカンマは許容されないので、`trailingComma`の設定を`es5`にする
-
-```javascript
-D(
-  "example.com",
-  REG_MY_PROVIDER,
-  DnsProvider(DSP_MY_PROVIDER),
-  A("@", "192.0.2.1"),
-  A("foo", "192.0.2.2"),
-  END, ←このカンマは許容されない
-);
-```
+- この他にも便利なマクロ関数が多く用意されている
 
 ## octoDNS
 <!--
@@ -738,52 +704,6 @@ porter:
   value: 192.0.2.3
 ```
 
-### ゾーンデータの取得（マスターファイル形式）
-
-- マスターファイル形式としては取得できない
-- ZoneFileSourceはソース専用のDNSプロバイダーであるため
-- 試しにoctodns-dumpを実行するとエラーが発生する
-
-```sh
-$ octodns-dump --config-file config.yaml --output-dir zones 
- --output-provider zonefile dnsbeer.com. sakuracloud
-...
-octodns.manager.ManagerException: output_provider=zonefile, 
-does not support copy method
-```
-
-### 注意点 - リソースレコードタイプ
-
-- DNSプロバイダーによっては、ゾーン頂点のSOAレコードとNSレコードは扱えない
-- DNSプロバイダーにより対応しているリソースレコードタイプは異なる
-    - 特にHTTPSとSVCBはoctoDNSの公式ドキュメント上ではサポートされていない
-        - DNSプロバイダーもサポートしていない
-        - 内部的には扱えるようになっているので実はYamlProviderでは利用できる
-- ALIASのような疑似リソースレコードタイプはDNSプロバイダーがサポートしていれば利用できる
-
-### 注意点 - 安全機能
-
-- ゾーンに10個以上のリソースレコードセットが存在するときに、次のそれぞれの場合は中断される
-    - 全体の30%以上のリソースレコードセットが更新される場合
-    - 全体の30%以上のリソースレコードセットが削除される場合
-- `--force`オプションを付けて実行すると、この安全機能は無視される
-
-```sh
-$ octodns-sync --config-file config.yaml
-...
-octodns.provider.plan.TooMuchChange: [dnsbeer.com.] 
-Too many updates, 100.00% is over 30.00% (10/10), force required
-```
-
-### 注意点 - APIリクエスト
-
-- 1回のAPIリクエストで更新できるリソースレコードセットの数はDNSプロバイダーにより異なる
-    - ゾーンのリソースレコードセットをまとめて更新できるもの
-    - 複数のリソースレコードセットの更新を一度にできるもの
-    - 1個のリソースレコードセットの更新しかできないもの
-- 1回のリクエストで1個のリソースレコードセットしか更新できない場合は、リソースレコードセットの数だけAPIへのリクエストを行うため、更新に時間がかかる
-
-
 ## CI/CDを利用したゾーン運用
 <!--
 class: heading
@@ -1010,103 +930,31 @@ class: heading
 class: body
 -->
 
-- “DNS as Code”とは
-    - Infrastructure as Code (IaC)をDNSに特化したもの
-    - DNSゾーンをコードとして管理し、ツールを使ってゾーンデータをDNSサービスに反映する
+- “DNS as Code”
+    - Infrastructure as CodeをDNSに特化したもの
+    - DNSゾーンの状態をコードで定義し、APIによりDNSゾーンに反映させる
+    - CI/CDによるゾーンの運用ができる
 - “DNS as Code”の主要な実装であるDNSControlとoctoDNSの紹介
-- GitHub ActionsとDNSControlを利用したCI/CDの例
+- GitHub ActionsとDNSControlを利用したCI/CDの例の紹介
 
 ## おまけ
 <!--
 class: heading
 -->
 
-### octoDNSのその他のコマンド
+### おまけ
 <!--
 class: body
 -->
 
-- octodns-compare
-    - 2つのDNSプロバイダー間のゾーンを比較する
-    - DNSプロバイダーの移行時のゾーン登録内容の比較にも利用できる
-- octodns-report
-    - ソースDNSプロバイダーのゾーンとDNS権威サーバーへのDNSクエリー結果を比較する
-- octodns-validate
-    - 設定ファイルを検査する
-- octodns-versions
-    - バージョンを表示して終了する
+登壇時間内に収まりきらなかった資料をおまけとして掲載する。
 
-### 複数のマネージドDNSサービスの利用上の注意点
-
-- ゾーン頂点のNSレコードを追加できる必要がある
-    - ゾーン頂点のNSレコードを追加・変更できないマネージドDNSサービスは多い
-- レジストラーに登録できるNSレコードの数に制限がある
-    - どのNSレコードを登録するか検討する
-- マネージドDNSサービスによってリソースレコードの制限が異なる
-
-### DNSプロバイダーパッケージの作成
-
-- DNSプロバイダーがAPIを公開していれば、DNSプロバイダーパッケージを作成できる
-- 開発言語
-    - DNSControl: Go言語
-    - octoDNS: Python
-- 今回、実行例として利用したものはそれぞれ
-    - とりあえず動くようにするだけであれば1、2日あればできる
-    - DNSプロバイダーの制限に基づく例外的な処理とかテストとかドキュメント作成を加えて数日といったところ
-    - 公開およびコントリビュートする予定
-
-### .editorconfig
-
-- 複数人で編集したときに以下のことが生じないように`.editorconfig`を用意する
-    - タブとスペースが混在する
-    - インデントのスペースの桁数が統一されていない
-    - 最終行が改行で終わったり終わらなかったりする
-
-#### .editorconfig
-
-```ini
-root = true
-
-[*]
-indent_style = space
-indent_size = 2
-tab_width = 2
-end_of_line = lf
-charset = UTF-8
-trim_trailing_whitespace = true
-insert_final_newline = true
-```
-
-#### .editorconfigをサポートしていないエディター
-
-- プラグインを入れて利用できるようにすることを徹底させる
-    - Vim用プラグイン
-        - https://github.com/editorconfig/editorconfig-vim
-        - Vim 9.0.1799, Neovim 0.9以降ではバンドルされている
-    - Emacs用プラグイン
-        - https://github.com/editorconfig/editorconfig-emacs
-
-
-### JavaScriptのフォーマッターの設定
-
-- DNSControlでは`trailingComma`の設定を`es5`にする
-- Prettier (.prettier)
-
-    ```json
-    {
-      "trailingComma": "es5"
-    }
-    ```
-
-- Biome (biome.json)
-
-    ```json
-    {
-      "javascript": {
-        "formatter": { "trailingComma": "es5" }
-      }
-    }
-    ```
+- DNS as Codeの実装
+- DNSControlの注意点
+- octoDNSの注意点
+- 複数のマネージドDNSサービスの利用上の注意点
+- 編集環境の注意点
+- DNSプロバイダーパッケージの作成
 
 ## DNS as Codeの実装
 <!--
@@ -1274,9 +1122,253 @@ test 300 IN A 192.0.2.1
 - DNSControlとoctoDNSとマスターファイル
     - DNSに特化しているため、記述が簡潔である
 
-### DNS as Codeの実装の紹介
 
-- 特定のDNSプロバイダー依存ではないツールとして次の2つのツールを紹介する
-    - DNSControl
-    - octoDNS
+## DNSControlの注意点
+<!--
+class: heading
+-->
 
+### 注意点 - リソースレコードタイプ
+<!--
+class: body
+-->
+
+- SOA：ほとんどの場合はDNSプロバイダー側で管理しているため、記述不要
+- NS：変更できないDNSプロバイダーの場合は記述不要
+- ALIAS：疑似リソースレコードタイプはDNSプロバイダーが対応していれば利用できる
+- TXT：SPFやDMARCを利用するときには`SPF_BUILDER`や`DMARC_BUILDER`を利用できる
+- CAA：`CAA_BUILDER`を利用できる
+
+#### SPF_BUILDER
+
+- SPF用のTXTレコードを生成してくれる
+- 10 DNS lookupsのチェックあり
+- https://docs.dnscontrol.org/language-reference/domain-modifiers/spf_builder
+
+```javascript
+  SPF_BUILDER({
+    label: "@",
+    parts: [
+      "v=spf1",
+      "ip4:198.252.206.0/24", // ny-mail*
+      "ip4:192.111.0.0/24", // co-mail*
+      "include:_spf.google.com", // GSuite
+      略
+      "~all"
+    ]
+  }),
+```
+
+### 注意点 - フォーマッター
+
+- PrettierやBiomeなどのフォーマッターを利用していると次のように整形されることがある
+- DNSControlにおいては最後に引数の末尾のカンマは許容されないので、`trailingComma`の設定を`es5`にする
+
+```javascript
+D(
+  "example.com",
+  REG_MY_PROVIDER,
+  DnsProvider(DSP_MY_PROVIDER),
+  A("@", "192.0.2.1"),
+  A("foo", "192.0.2.2"),
+  END, ←このカンマは許容されない
+);
+```
+
+#### JavaScriptのフォーマッターの設定
+
+- `trailingComma`の設定を`es5`にする
+- Prettier (.prettier)
+
+    ```json
+    {
+      "trailingComma": "es5"
+    }
+    ```
+
+- Biome (biome.json)
+
+    ```json
+    {
+      "javascript": {
+        "formatter": { "trailingComma": "es5" }
+      }
+    }
+    ```
+
+
+## octoDNSの注意点
+<!--
+class: heading
+-->
+
+### ゾーンデータの取得（マスターファイル形式）
+<!--
+class: body
+-->
+
+- マスターファイル形式としては取得できない
+- ZoneFileSourceはソース専用のDNSプロバイダーであるため
+- 試しにoctodns-dumpを実行するとエラーが発生する
+
+```sh
+$ octodns-dump --config-file config.yaml --output-dir zones 
+ --output-provider zonefile dnsbeer.com. sakuracloud
+...
+octodns.manager.ManagerException: output_provider=zonefile, 
+does not support copy method
+```
+
+### 注意点 - リソースレコードタイプ
+
+- DNSプロバイダーによっては、ゾーン頂点のSOAレコードとNSレコードは扱えない
+- DNSプロバイダーにより対応しているリソースレコードタイプは異なる
+    - 特にHTTPSとSVCBはoctoDNSの公式ドキュメント上ではサポートされていない
+        - DNSプロバイダーもサポートしていない
+        - 内部的には扱えるようになっているので実はYamlProviderでは利用できる
+- ALIASのような疑似リソースレコードタイプはDNSプロバイダーがサポートしていれば利用できる
+
+### 注意点 - 安全機能
+
+- ゾーンに10個以上のリソースレコードセットが存在するときに、次のそれぞれの場合は中断される
+    - 全体の30%以上のリソースレコードセットが更新される場合
+    - 全体の30%以上のリソースレコードセットが削除される場合
+- `--force`オプションを付けて実行すると、この安全機能は無視される
+
+```sh
+$ octodns-sync --config-file config.yaml
+...
+octodns.provider.plan.TooMuchChange: [dnsbeer.com.] 
+Too many updates, 100.00% is over 30.00% (10/10), force required
+```
+
+### 注意点 - APIリクエスト
+
+- 1回のAPIリクエストで更新できるリソースレコードセットの数はDNSプロバイダーにより異なる
+    - ゾーンのリソースレコードセットをまとめて更新できるもの
+    - 複数のリソースレコードセットの更新を一度にできるもの
+    - 1個のリソースレコードセットの更新しかできないもの
+- 1回のリクエストで1個のリソースレコードセットしか更新できない場合は、リソースレコードセットの数だけAPIへのリクエストを行うため、更新に時間がかかる
+
+
+### octoDNSのその他のコマンド
+
+- octodns-compare
+    - 2つのDNSプロバイダー間のゾーンを比較する
+    - DNSプロバイダーの移行時のゾーン登録内容の比較にも利用できる
+- octodns-report
+    - ソースDNSプロバイダーのゾーンとDNS権威サーバーへのDNSクエリー結果を比較する
+- octodns-validate
+    - 設定ファイルを検査する
+- octodns-versions
+    - バージョンを表示して終了する
+
+
+## 複数のマネージドDNSサービスの利用上の注意点
+<!--
+class: heading
+-->
+
+### 複数のマネージドDNSサービスの利用上の注意点
+<!--
+class: body
+-->
+
+- ゾーン頂点のNSレコードを追加できる必要がある
+    - ゾーン頂点のNSレコードを追加・変更できないマネージドDNSサービスは多い
+- レジストラーに登録できるNSレコードの数に制限がある
+    - どのNSレコードを登録するか検討する
+- マネージドDNSサービスによってリソースレコードの制限が異なる
+
+## 編集環境の注意点
+<!--
+class: heading
+-->
+
+### 編集環境の注意点
+<!--
+class: body
+-->
+
+- 編集したときに以下のことが生じないようにする
+    - タブとスペースが混在する
+    - インデントのスペースの桁数が統一されていない
+    - 最終行が改行で終わったり終わらなかったりする
+- `.editorconfig`を用意し、リポジトリに含める
+
+### .editorconfigの例
+
+```ini
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+tab_width = 2
+end_of_line = lf
+charset = UTF-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+```
+
+### .editorconfigをサポートしていないエディター
+
+プラグインを入れて利用できるようにすることを徹底させる。
+
+- Vim用プラグイン
+    - https://github.com/editorconfig/editorconfig-vim
+    - Vim 9.0.1799, Neovim 0.9以降ではバンドルされている
+- Emacs用プラグイン
+    - https://github.com/editorconfig/editorconfig-emacs
+- VSCode用エクステンション
+    - https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig
+
+## DNSプロバイダーパッケージの作成
+<!--
+class: heading
+-->
+
+### DNSプロバイダーパッケージの作成
+<!--
+class: body
+-->
+
+- DNSプロバイダーがAPIを公開していれば、DNSプロバイダーパッケージを作成できる
+- 開発言語
+    - DNSControl: Go言語
+    - octoDNS: Python
+- 今回、実行例として利用したものはそれぞれ
+    - とりあえず動くようにするだけであれば1、2日あればできる
+    - DNSプロバイダーの制限に基づく例外的な処理とかテストとかドキュメント作成を加えて数日といったところ
+    - 公開およびコントリビュートする予定
+
+### DNSControl
+
+- 開発ドキュメントが用意されている
+    - Code Style Guide
+        - https://docs.dnscontrol.org/developer-info/styleguide-code
+    - Writing new DNS providers
+        - https://docs.dnscontrol.org/developer-info/writing-providers
+
+### octoDNS
+
+- 開発ドキュメントが十分には用意されていないので、他のプロバイダーパッケージを参考に開発する
+- `octodns.provider.base.BaseProvider`を継承したクラスを作成し、以下のメソッドを実装する
+    - `__init__()`
+        - 引数：self, id, 設定ファイルのパラメーター...
+    - `list_zones()` - ゾーン名一覧を取得する
+    - `populate()` - プロバイダーからゾーンデータを取得する
+    - `_apply()` - プロバイダーにゾーンデータを反映する
+
+### octoDNS
+
+- 同クラスに以下のインスタンス変数を設定する
+    - `SUPPORTS` - 対応しているリソースレコードタイプをset型として設定
+    - `SUPPORTS_GEO`
+    - `log` - ロガーを設定する
+- 同クラスに以下のインスタンス変数・プロパティーを設定する。デフォルトがFalseなので対応していなければ設定しなくてもよい
+    - `SUPPORTS_MULTIVALUE_PTR`
+    - `SUPPORTS_POOL_VALUE_STATUS`
+    - `SUPPORTS_ROOT_NS`
+    - `SUPPORTS_DYNAMIC_SUBNETS`
+    - `SUPPORTS_DYNAMIC`
