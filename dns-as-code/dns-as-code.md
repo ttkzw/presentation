@@ -430,6 +430,7 @@ D("example.com", REG_MY_PROVIDER, DnsProvider(DSP_R53),
     A("www", addrA + 1), // 1.2.3.5
 END);
 ```
+
 - この他にも便利なマクロ関数が多く用意されている
 
 ## octoDNS
@@ -1162,7 +1163,7 @@ class: body
 ### 注意点 - フォーマッター
 
 - PrettierやBiomeなどのフォーマッターを利用していると次のように整形されることがある
-- DNSControlにおいては最後に引数の末尾のカンマは許容されないので、`trailingComma`の設定を`es5`にする
+- DNSControlにおいては最後の引数の末尾のカンマは許容されないので、Trailing Commasの設定を`es5`にする
 
 ```javascript
 D(
@@ -1177,7 +1178,6 @@ D(
 
 #### JavaScriptのフォーマッターの設定
 
-- `trailingComma`の設定を`es5`にする
 - Prettier (.prettier)
 
     ```json
@@ -1191,7 +1191,7 @@ D(
     ```json
     {
       "javascript": {
-        "formatter": { "trailingComma": "es5" }
+        "formatter": { "trailingCommas": "es5" }
       }
     }
     ```
