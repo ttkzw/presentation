@@ -1,0 +1,10 @@
+flowchart LR
+    creds["
+    creds.json
+    （プロバイダー設定ファイル）
+    "]
+    dnsconfig["
+    dnsconfig.js
+    （ゾーン設定ファイル）
+    "]
+    creds & dnsconfig --> DNSControl --API--> DNSプロバイダー
