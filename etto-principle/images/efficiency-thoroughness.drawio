@@ -1,0 +1,60 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.9 Chrome/134.0.6998.205 Electron/35.4.0 Safari/537.36" version="27.0.9">
+  <diagram name="ページ1" id="5HJYH5zVJP-5uHvZvEnn">
+    <mxGraphModel dx="976" dy="752" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-1" value="" style="html=1;shadow=0;dashed=0;align=center;verticalAlign=middle;shape=mxgraph.arrows2.arrow;dy=0.6;dx=40;notch=0;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="80" y="350" width="680" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-2" value="現在" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="405" y="370" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-3" value="過去" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="205" y="370" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-4" value="未来" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="605" y="370" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-5" value="現在の効率性は過去の徹底性を必要とする" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="235" y="260" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-6" value="将来の効率性は現在の徹底性を必要とする" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="460" y="260" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-7" value="徹底性" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;strokeWidth=3;strokeColor=light-dark(#ff0000, #ededed);" vertex="1" parent="1">
+          <mxGeometry x="160" y="410" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-9" value="徹底性" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;strokeWidth=3;strokeColor=light-dark(#ff0000, #ededed);" vertex="1" parent="1">
+          <mxGeometry x="360" y="410" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-10" value="効率性" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;strokeWidth=3;strokeColor=light-dark(#ff0000, #ededed);" vertex="1" parent="1">
+          <mxGeometry x="360" y="320" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-11" value="効率性" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;strokeWidth=3;strokeColor=light-dark(#ff0000, #ededed);" vertex="1" parent="1">
+          <mxGeometry x="560" y="320" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-15" value="" style="curved=1;endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;strokeColor=light-dark(#fa0000, #ededed);" edge="1" parent="1" target="aGF3FhDgcLcvZKoorFbh-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="280" y="430" as="sourcePoint" />
+            <mxPoint x="330" y="380" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="320" y="430" />
+              <mxPoint x="320" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aGF3FhDgcLcvZKoorFbh-16" value="" style="curved=1;endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=3;strokeColor=light-dark(#fa0000, #ededed);" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="480" y="430" as="sourcePoint" />
+            <mxPoint x="560" y="340" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="520" y="430" />
+              <mxPoint x="520" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
