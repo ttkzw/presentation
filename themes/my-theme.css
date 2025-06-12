@@ -64,6 +64,11 @@ section.body h4 {
 	font-size: 1.4em;
 }
 
+section.body strong {
+	font-weight: bold;
+	color: red;
+}
+
 section.body {
 	background-color: white;
 	font-size: 32px;
