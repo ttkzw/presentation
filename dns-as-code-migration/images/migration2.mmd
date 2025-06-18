@@ -1,0 +1,6 @@
+flowchart LR
+    sourceprovider("移行元プロバイダー")
+    targetprovider("移行先プロバイダー")
+    tool("DNS as Code<br>ツール")
+
+    sourceprovider --API--> tool --API--> targetprovider

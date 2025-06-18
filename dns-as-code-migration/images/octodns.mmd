@@ -1,0 +1,5 @@
+flowchart LR
+    source("ソース<br>DNSプロバイダー")
+    octodns("octoDNS")
+    target("ターゲット<br>DNSプロバイダー")
+    source --API--> octodns --API--> target

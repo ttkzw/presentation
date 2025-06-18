@@ -1,0 +1,5 @@
+flowchart LR
+    zonefile["ゾーンファイル<br>（dnsconfig.js）"]
+    dnscontrol("DNSControl")
+    targetprovider("移行先プロバイダー")
+    zonefile --> dnscontrol --API--> targetprovider

@@ -1,0 +1,6 @@
+flowchart LR
+    targetprovider("移行先プロバイダー")
+    tool("DNS as Code<br>ツール")
+    zonedata["ゾーンファイル"]
+
+    zonedata --> tool --API--> targetprovider

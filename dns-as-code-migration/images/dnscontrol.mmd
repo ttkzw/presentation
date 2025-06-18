@@ -1,0 +1,12 @@
+flowchart LR
+    creds["
+    creds.json
+    （プロバイダー設定）
+    "]
+    dnsconfig["
+    dnsconfig.js
+    （ゾーンファイル）
+    "]
+    dnscontrol("DNSControl")
+    dnsprivider("DNSプロバイダー")
+    creds & dnsconfig --> dnscontrol --API--> dnsprivider
