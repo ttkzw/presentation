@@ -1,0 +1,5 @@
+flowchart LR
+    sourceprovider("移行元プロバイダー")
+    dnscontrol("DNSControl")
+    zonefile["ゾーンファイル<br>（マスターファイル形式）"]
+    sourceprovider --API--> dnscontrol --> zonefile

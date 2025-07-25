@@ -1,0 +1,5 @@
+flowchart LR
+    zonefile1["ゾーンファイル<br>（マスターファイル形式）"]
+    dnscontrol("DNSControl")
+    zonefile2["ゾーンファイル<br>（dnsconfig.js）"]
+    zonefile1 --> dnscontrol --> zonefile2
