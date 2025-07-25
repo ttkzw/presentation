@@ -18,7 +18,7 @@ _paginate: false
 -->
 
 - DNS Summer Day 2024（2024年6月21日）登壇資料
-    - 2024-09-07 最終更新
+    - 2025-07-25 最終更新
 - 所属：さくらインターネット株式会社
 - 氏名：滝澤隆史
 
@@ -347,7 +347,7 @@ END);
 #### 変更前の状態
 
 - 次のリソースレコードが登録されているとする（コントロールパネル）
-![](images/dnscontrol-cp01.png)
+![h:420](images/dnscontrol-cp01.png)
 
 #### 設定内容
 
@@ -393,7 +393,7 @@ dnscontrol push
 #### 反映したことの確認
 
 - コントロールパネル
-![](images/dnscontrol-cp02.png)
+![h:420](images/dnscontrol-cp02.png)
 
 #### ゾーンデータの取得（マスターファイル形式）
 
@@ -459,12 +459,12 @@ class: body
 
 - ソースとして指定したDNSプロバイダーのゾーンデータをAPIでターゲットのDNSプロバイダーに反映させる
 
-![](images/octodns.svg)
+![h:300](images/octodns.svg)
 
 ### 複数のDNSプロバイダーへの対応
 
 - 複数のDNSプロバイダーにも反映できる
-![](images/octodns-multi.svg)
+![h:300](images/octodns-multi.svg)
 
 ### 対応しているマネージドDNSサービスプロバイダー
 
@@ -475,7 +475,8 @@ class: body
 - Google Cloud DNS
 - 計23プロバイダー
 
-※注記）本資料の実行例は「さくらのクラウド　DNSアプライアンス」対応のプロバイダーパッケージoctodns-sakuracloud（滝澤が開発中）を利用したものであり、現時点では正式リリースはされていない。
+※注記）本資料の実行例は「さくらのクラウド　DNSアプライアンス」対応のプロバイダーパッケージoctodns-sakuracloud（滝澤が開発中）を利用したものであり、~~現時点では正式リリースはされていない。~~
+2025-02-19追記：v0.0.1がリリースされた。pipでインストールできる。
 
 ### 対応しているその他のDNSプロバイダー
 
@@ -1164,7 +1165,7 @@ class: body
 ### 注意点 - フォーマッター
 
 - PrettierやBiomeなどのフォーマッターを利用していると次のように整形されることがある
-- DNSControlにおいては最後の引数の末尾のカンマは許容されないので、Trailing Commasの設定を`es5`にする
+- ~~DNSControlにおいては最後の引数の末尾のカンマは許容されないので~~（2025-07-25追記: v4.15.0で許容された）、Trailing Commasの設定を`es5`にする
 
 ```javascript
 D(
@@ -1341,7 +1342,7 @@ class: body
 - 今回、実行例として利用したものはそれぞれ
     - とりあえず動くようにするだけであれば1、2日あればできる
     - DNSプロバイダーの制限に基づく例外的な処理とかテストとかドキュメント作成を加えて数日といったところ
-    - 公開およびコントリビュートする予定
+    - 公開およびコントリビュート~~する予定~~した
 
 ### DNSControl
 
@@ -1354,6 +1355,7 @@ class: body
 ### octoDNS
 
 - 開発ドキュメントが十分には用意されていないので、他のプロバイダーパッケージを参考に開発する
+- [octodns-template](https://github.com/octodns/octodns-template)を利用する
 - `octodns.provider.base.BaseProvider`を継承したクラスを作成し、以下のメソッドを実装する
     - `__init__()`
         - 引数：self, id, 設定ファイルのパラメーター...
