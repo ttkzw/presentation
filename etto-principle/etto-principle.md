@@ -1,6 +1,6 @@
 ---
 marp: true
-title: ETTO原則入門
+title: 効率のみを求めて失敗しないためのETTO原則入門
 size: 16:9
 theme: my-theme
 headingDivider: 4
@@ -17,18 +17,18 @@ _footer: ""
 _paginate: false
 -->
 
-- 2025年6月
+- 2025年6月作成（2025年7月更新）
 - 氏名：滝澤隆史
 
-### アジェンダ
+## アジェンダ
 <!--
 class: body
 -->
 
 - ETTO原則とは何かを説明する
-- 題材として次の例を示す
-    - ITシステムの運用における作業手順書作成の例を示し、効率性と徹底性のバランスを考える必要があることを示す
-    - 根本原因分析の例を示し、根本原因分析を徹底的に行うのが難しいということを示す
+- 題材
+    - ITシステムの運用における作業手順書作成
+    - 根本原因分析
 
 ## ETTO原則とは
 <!--
@@ -191,7 +191,7 @@ class: body
 
 - 作業するエンジニアの技術スキル次第でもバランスを調整可能である
 - ヒューマンエラーの発生は作業当日のエンジニア自身の身体的・精神的状況にも影響されるため、技術スキルへの高い依存はしないほうがよい
-- 深夜に障害対応をしていて徹夜明けかもしれないですし、家族が風邪を引いていて頭が心配事でいっぱいかもしれません
+- 深夜に障害対応をしていて徹夜明けかもしれないし、家族が風邪を引いていて頭が心配事でいっぱいかもしれない
 
 ## 題材：根本原因分析
 <!--
@@ -214,9 +214,9 @@ class: body
 以下のGoogleのSRE(Site Reliability Engineering)本に掲載されている。日本語訳の書籍もある。
 
 - Site Reliability Engineering: Chapter 15 - Postmortem Culture: Learning from Failure
-    - https://landing.google.com/sre/sre-book/chapters/postmortem-culture/
+    - https://sre.google/sre-book/postmortem-culture/
 - The Site Reliability Workbook: Chapter 10 - Postmortem Culture: Learning from Failure
-    - https://landing.google.com/sre/workbook/chapters/postmortem-culture/
+    - https://sre.google/workbook/postmortem-culture/
 
 ### ポストモーテムの特徴
 
@@ -363,13 +363,13 @@ class: body
 -->
 
 - ETTO原則により効率性と徹底性はトレードオフの関係にある
-- 題材として次の例を示した
-    - ITシステムの運用における作業手順書作成の例を示し、効率性と徹底性のバランスを考える必要があることを示す
-    - 根本原因分析の例を示し、根本原因分析を徹底的に行うのが難しいということを示す
+- 題材
+    - ITシステムの運用における作業手順書作成を題材として、効率性と徹底性のバランスを考える必要があることを示した
+    - 根本原因分析を題材として、根本原因分析を徹底的に行うのが難しいということを示した
 
 ### 参考資料
 
-- [The ETTO principle: Why things that go right sometimes go wrong.](https://erikhollnagel.com/books/the-etto-principle-2009) (Book)
+- [The ETTO principle: Why things that go right sometimes go wrong.](https://erikhollnagel.com/books/the-etto-principle-2009)
 - [The ETTO Principle - Efficiency-Thoroughness Trade-Off](https://erikhollnagel.com/ideas/etto-principle/)
 - [Work-related ETTO rules](https://erikhollnagel.com/ideas/etto-principle/work-related-etto-rules.html)
 - [Safety-IからSafety-IIへ―レジリエンス工学入門―（オペレーションズ・リサーチ 2014年8月号）](https://orsj.org/wp-content/corsj/or59-8/or59_8_435.pdf)
